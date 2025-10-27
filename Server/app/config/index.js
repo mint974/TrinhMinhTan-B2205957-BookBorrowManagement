@@ -1,11 +1,12 @@
-import mongoose from "mongoose";
-
-export const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("MongoDB Connected");
-  } catch (err) {
-    console.error("MongoDB Connection Failed:", err);
-    process.exit(1);
-  }
+const config = {
+  app: {
+    port: process.env.PORT || 5000,
+  },
+  db: {
+    uri:
+      process.env.MONGODB_URI ||
+      "mongodb://127.0.0.1:27017/book_borrow_management",
+  },
 };
+
+module.exports = config;
