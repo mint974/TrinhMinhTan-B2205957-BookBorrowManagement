@@ -1,24 +1,24 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const DocGiaSchema = new mongoose.Schema(
+const NhanVienSchema = new mongoose.Schema(
   {
-    MaDocGia: {
+    MSNV: {
       type: String,
       unique: true,
       default: function () {
-        // Tự động tạo MaDocGia theo format: DG + timestamp
-        return "DG" + Date.now();
+        // Tự động tạo maNhanVien theo format: NV + timestamp
+        return "NV" + Date.now();
       },
     },
-    HoLot: { type: String, required: true },
-    Ten: { type: String, required: true },
+
+    HoTen: { type: String, required: true },
     Email: { type: String, required: true, unique: true },
     Password: { type: String, required: true },
-    NgaySinh: { type: Date, required: true },
-    GioiTinh: { type: String, enum: ["Nam", "Nữ"], required: true },
     DiaChi: { type: String, required: true },
-    DienThoai: { type: String, required: true },
+    Phai: { type: String, enum: ["Nam", "Nữ"], required: true },
+    SoDienThoai: { type: String, required: true },
+    ChucVu: { type: String, enum: ["Admin", "NhanVien"], default: "NhanVien" },
     Avatar: { type: String, default: "" },
     deleted: { type: Boolean, default: false },
   },
@@ -28,7 +28,7 @@ const DocGiaSchema = new mongoose.Schema(
 );
 
 // Mã hóa password trước khi lưu
-DocGiaSchema.pre("save", async function (next) {
+NhanVienSchema.pre("save", async function (next) {
   if (!this.isModified("Password")) return next();
 
   const salt = await bcrypt.genSalt(10);
@@ -37,8 +37,8 @@ DocGiaSchema.pre("save", async function (next) {
 });
 
 // So sánh password
-DocGiaSchema.methods.comparePassword = async function (password) {
+NhanVienSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.Password);
 };
 
-module.exports = mongoose.model("DocGia", DocGiaSchema);
+module.exports = mongoose.model("NhanVien", NhanVienSchema);

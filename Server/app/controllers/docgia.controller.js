@@ -13,7 +13,7 @@ exports.create = async (req, res, next) => {
     const document = await docgiaService.create(req.body);
     return res.send(document);
   } catch (error) {
-    console.error("Error creating doc gia:", error);
+    // console.error("Error creating doc gia:", error);
     return next(
       new ApiError(500, "An error occurred while creating the doc gia")
     );
