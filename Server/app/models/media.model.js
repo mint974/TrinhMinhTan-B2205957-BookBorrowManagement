@@ -12,7 +12,10 @@ const MediaSchema = new mongoose.Schema(
     },
     TenMedia: { type: String, required: true },
     LoaiMedia: { type: String, required: true },
-    file: { type: String, required: true },
+    filePath: { type: String, required: true },
+    fileType: { type: String, required: true },
+    fileSize: { type: Number },
+
     MoTa: { type: String, default: "" },
     NguoiTao: {
       type: mongoose.Schema.Types.ObjectId,
