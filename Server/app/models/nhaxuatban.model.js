@@ -6,19 +6,24 @@ const NhaXuatBanSchema = new mongoose.Schema(
       type: String,
       unique: true,
       default: function () {
-        // Tự động tạo MaNXB theo format: NXB + timestamp
         return "NXB" + Date.now();
       },
-      TenNXB: { type: String, required: true },
-      DiaChi: { type: String },
-      SoDienThoai: { type: String },
-      Email: { type: String },
-      deleted: { type: Boolean, default: false },
     },
+    TenNXB: { type: String, required: true },
+    DiaChi: { type: String },
+    SoDienThoai: { type: String },
+    Email: { type: String },
+    NguoiTao: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "NhanVien",
+      required: true,
+    },
+    deleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
   }
 );
+
 const NhaXuatBan = mongoose.model("NhaXuatBan", NhaXuatBanSchema);
 module.exports = NhaXuatBan;

@@ -1,0 +1,87 @@
+const NhaXuatBan = require("../models/nhaxuatban.model");
+
+class NhaXuatBanService {
+  static async create(data) {
+    return await NhaXuatBan.create(data);
+  }
+
+  static async findAll(query = {}) {
+    const { search, page = 1, limit = 10 } = query;
+    const filter = { deleted: false };
+
+    if (search) {
+      filter.$or = [
+        { TenNXB: { $regex: search, $options: "i" } },
+        { DiaChi: { $regex: search, $options: "i" } },
+        { Email: { $regex: search, $options: "i" } },
+        { SoDienThoai: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+    const total = await NhaXuatBan.countDocuments(filter);
+    const data = await NhaXuatBan.find(filter)
+      .populate("NguoiTao", "TenNV Email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    return {
+      data,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  static async findById(id) {
+    return await NhaXuatBan.findOne({ _id: id, deleted: false }).populate(
+      "NguoiTao",
+      "TenNV Email"
+    );
+  }
+
+  static async findByMaNXB(maNXB) {
+    return await NhaXuatBan.findOne({ MaNXB: maNXB, deleted: false }).populate(
+      "NguoiTao",
+      "TenNV Email"
+    );
+  }
+
+  static async update(id, data) {
+    delete data.MaNXB;
+    delete data.NguoiTao;
+
+    return await NhaXuatBan.findOneAndUpdate(
+      { _id: id, deleted: false },
+      data,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate("NguoiTao", "TenNV Email");
+  }
+
+  static async softDelete(id) {
+    return await NhaXuatBan.findOneAndUpdate(
+      { _id: id, deleted: false },
+      { deleted: true },
+      { new: true }
+    );
+  }
+
+  static async hardDelete(id) {
+    return await NhaXuatBan.findByIdAndDelete(id);
+  }
+
+  static async getAllForSelect() {
+    return await NhaXuatBan.find({ deleted: false })
+      .select("MaNXB TenNXB DiaChi SoDienThoai")
+      .sort({ TenNXB: 1 });
+  }
+}
+
+module.exports = NhaXuatBanService;
