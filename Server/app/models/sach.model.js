@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NhanVienSchema = new mongoose.Schema(
+const SachSchema = new mongoose.Schema(
   {
     MSS: {
       type: String,
@@ -11,11 +11,16 @@ const NhanVienSchema = new mongoose.Schema(
       },
     },
     TenSach: { type: String, required: true },
-    TacGia: { type: String, required: true },
     NhaXuatBan: { type: String, required: true },
     NamXuatBan: { type: Number, required: true },
     TheLoai: { type: String, required: true },
     SoLuong: { type: Number, required: true, min: 0 },
+    TacGia: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "TacGia",
+      },
+    ],
   },
   {
     timestamps: true,
