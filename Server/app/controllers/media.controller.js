@@ -10,22 +10,25 @@ exports.create = async (req, res, next) => {
       return next(new ApiError(400, "Vui lòng chọn file để upload"));
     }
 
-    const { TenMedia, LoaiMedia, MoTa } = req.body;
+    const { TenMedia, LoaiMedia, MoTa, NguoiTao } = req.body;
 
     if (!TenMedia || !LoaiMedia) {
       // Xóa file đã upload nếu thiếu thông tin
       await fs.unlink(req.file.path);
       return next(new ApiError(400, "Thiếu thông tin: TenMedia và LoaiMedia"));
     }
+    if (!NguoiTao) {
+      return res.status(400).json({ message: "Thiếu trường NguoiTao" });
+    }
 
     const mediaData = {
       TenMedia,
       LoaiMedia,
+      NguoiTao,
       MoTa: MoTa || "",
       filePath: req.file.path,
       fileType: req.file.mimetype,
       fileSize: req.file.size,
-      NguoiTao: req.user.id, // Lấy từ auth middleware
     };
 
     const media = await MediaService.create(mediaData);

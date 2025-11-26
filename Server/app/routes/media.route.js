@@ -3,6 +3,7 @@ const controller = require("../controllers/media.controller");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const auth = require("../middlewares/auth");
 
 // Cấu hình multer để upload file
 const storage = multer.diskStorage({
@@ -37,18 +38,22 @@ const upload = multer({
 });
 
 // Routes
-router.get("/statistics", controller.getStatistics); // Thống kê
-router.get("/loai/:loaiMedia", controller.getByLoaiMedia); // Lọc theo loại
-router.get("/ma/:maMedia", controller.getByMaMedia); // Tìm theo mã
-router.get("/download/:id", controller.downloadFile); // Download file
-router.get("/", controller.getAll); // Danh sách (có filter & search)
-router.get("/:id", controller.getById); // Chi tiết
+router.get("/statistics", auth, controller.getStatistics); // Thống kê
+router.get("/loai/:loaiMedia", auth, controller.getByLoaiMedia); // Lọc theo loại
+router.get("/ma/:maMedia", auth, controller.getByMaMedia); // Tìm theo mã
+router.get("/download/:id", auth, controller.downloadFile); // Download file
+router.get("/", auth, controller.getAll); // Danh sách (có filter & search)
+router.get("/:id", auth, controller.getById); // Chi tiết
 
-router.post("/", upload.single("file"), controller.create); // Upload file mới
-router.put("/:id", controller.update); // Cập nhật thông tin
-router.put("/:id/replace-file", upload.single("file"), controller.replaceFile); // Thay thế file
-
-router.delete("/:id", controller.delete); // Xóa mềm
-router.delete("/:id/hard", controller.hardDelete); // Xóa vĩnh viễn
+router.post("/", auth, upload.single("file"), controller.create); // Upload file mới
+router.put("/:id", auth, controller.update); // Cập nhật thông tin
+router.put(
+  "/:id/replace-file",
+  auth,
+  upload.single("file"),
+  controller.replaceFile
+); // Thay thế file
+router.delete("/:id", auth, controller.delete); // Xóa mềm
+router.delete("/:id/hard", auth, controller.hardDelete); // Xóa vĩnh viễn
 
 module.exports = router;
