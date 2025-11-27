@@ -18,6 +18,24 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/bookborrow/manager/admin/employees",
+    name: "admin.employees",
+    component: () => import("../views/nhanvien.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/bookborrow/manager/admin/profile",
+    name: "admin.profile",
+    component: () => import("../views/trangcanhan.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/bookborrow/manager/admin/settings",
+    name: "admin.settings",
+    component: () => import("../views/Settings.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/bookborrow/manager/login",
   },

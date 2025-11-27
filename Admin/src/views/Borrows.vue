@@ -38,7 +38,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import BorrowService from "@/services/borrow.service";
+import BorrowService from "@/services/theodoimuonsach.service";
 
 const borrows = ref([]);
 

@@ -16,6 +16,13 @@
             </li>
 
             <li class="nav-item">
+                <router-link to="/bookborrow/manager/admin/employees" class="nav-link" active-class="active">
+                    <i class="fas fa-users-cog me-2"></i>
+                    <span>Nhân Viên</span>
+                </router-link>
+            </li>
+
+            <li class="nav-item">
                 <router-link to="/bookborrow/manager/admin/books" class="nav-link" active-class="active">
                     <i class="fas fa-book me-2"></i>
                     <span>Quản Lý Sách</span>
@@ -63,6 +70,15 @@
                 <router-link to="/bookborrow/manager/admin/media" class="nav-link" active-class="active">
                     <i class="fas fa-file-alt me-2"></i>
                     <span>Media</span>
+                </router-link>
+            </li>
+
+            <li class="nav-divider"></li>
+
+            <li class="nav-item">
+                <router-link to="/bookborrow/manager/admin/settings" class="nav-link" active-class="active">
+                    <i class="fas fa-cog me-2"></i>
+                    <span>Cài Đặt</span>
                 </router-link>
             </li>
         </ul>

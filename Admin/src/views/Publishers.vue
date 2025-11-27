@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import PublisherService from "@/services/publisher.service";
+import PublisherService from "@/services/nhaxuatban.service";
 
 const publishers = ref([]);
 const showForm = ref(false);

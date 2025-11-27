@@ -43,7 +43,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import ReaderService from "@/services/reader.service";
+import ReaderService from "@/services/docgia.service";
 
 const readers = ref([]);
 const showForm = ref(false);

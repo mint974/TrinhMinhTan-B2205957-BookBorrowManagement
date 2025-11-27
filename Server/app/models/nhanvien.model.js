@@ -15,7 +15,10 @@ const NhanVienSchema = new mongoose.Schema(
     HoTen: { type: String, required: true },
     Email: { type: String, required: true, unique: true },
     Password: { type: String, required: true },
-    DiaChi: { type: String, required: true },
+    MaTinh: { type: String, required: true },
+    MaQuan: { type: String, default: "" },
+    MaPhuong: { type: String, default: "" },
+    DiaChiChiTiet: { type: String, default: "" },
     Phai: { type: String, enum: ["Nam", "Nữ"], required: true },
     SoDienThoai: { type: String, required: true },
     ChucVu: { type: String, enum: ["Admin", "NhanVien"], default: "NhanVien" },
@@ -24,6 +27,8 @@ const NhanVienSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 

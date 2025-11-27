@@ -16,10 +16,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import BookService from "@/services/book.service";
-import ReaderService from "@/services/reader.service";
-import PublisherService from "@/services/publisher.service";
-import BorrowService from "@/services/borrow.service";
+import BookService from "@/services/sach.service";
+import ReaderService from "@/services/docgia.service";
+import PublisherService from "@/services/nhaxuatban.service";
+import BorrowService from "@/services/theodoimuonsach.service";
 
 const stats = ref([]);
 

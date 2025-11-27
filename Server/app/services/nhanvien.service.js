@@ -3,7 +3,8 @@ const NhanVien = require("../models/nhanvien.model");
 class NhanVienService {
   // Tạo nhân viên
   static async create(data) {
-    return await NhanVien.create(data);
+    const nhanvien = await NhanVien.create(data);
+    return await NhanVien.findById(nhanvien._id).select("-Password");
   }
 
   // Lấy danh sách nhân viên (không lấy bản đã xóa)
@@ -53,6 +54,51 @@ class NhanVienService {
       Email: email.toLowerCase().trim(),
       deleted: false,
     });
+  }
+
+  // Lấy thông tin profile
+  static async getProfile(id) {
+    return await NhanVien.findOne({ _id: id, deleted: false }).select(
+      "-Password"
+    );
+  }
+
+  // Cập nhật profile
+  static async updateProfile(id, data) {
+    const updateData = { ...data };
+    delete updateData.Password;
+    delete updateData.Email;
+    delete updateData.MSNV;
+    delete updateData.ChucVu;
+
+    return await NhanVien.findOneAndUpdate(
+      { _id: id, deleted: false },
+      updateData,
+      { new: true }
+    ).select("-Password");
+  }
+
+  // Đổi mật khẩu
+  static async changePassword(id, oldPassword, newPassword) {
+    const nv = await NhanVien.findOne({ _id: id, deleted: false });
+    if (!nv) return null;
+
+    const isMatch = await nv.comparePassword(oldPassword);
+    if (!isMatch) return null;
+
+    nv.Password = newPassword;
+    await nv.save();
+
+    return await NhanVien.findById(id).select("-Password");
+  }
+
+  // Cập nhật avatar
+  static async updateAvatar(id, avatarPath) {
+    return await NhanVien.findOneAndUpdate(
+      { _id: id, deleted: false },
+      { Avatar: avatarPath },
+      { new: true }
+    ).select("-Password");
   }
 
   static validateNhanVienData(data) {

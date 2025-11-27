@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
     token,
     nhanvien: {
       id: nv._id,
-      HoTen: nv.HoTen,
+      TenNV: nv.HoTen,
       Email: nv.Email,
       ChucVu: nv.ChucVu,
     },

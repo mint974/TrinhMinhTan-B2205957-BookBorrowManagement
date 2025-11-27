@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
@@ -12,6 +13,9 @@ const nhaxuatbanRoutes = require("./routes/nhaxuatban.route");
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files (uploads)
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Routes
 app.use("/api/nhanvien", nhanvienRoute);

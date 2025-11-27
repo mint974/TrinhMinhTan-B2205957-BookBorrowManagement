@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import BookService from "@/services/book.service";
+import BookService from "@/services/sach.service";
 
 const books = ref([]);
 const keyword = ref("");
