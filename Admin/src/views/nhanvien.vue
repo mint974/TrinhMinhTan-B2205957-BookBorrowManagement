@@ -16,40 +16,29 @@
         </div>
 
         <!-- Search & Filter -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text" class="form-control" placeholder="Tìm theo tên, email, SĐT..."
-                                v-model="searchQuery" @input="filterEmployees" />
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select" v-model="filterChucVu" @change="filterEmployees">
-                            <option value="">Tất cả chức vụ</option>
-                            <option value="Admin">Admin</option>
-                            <option value="NhanVien">Nhân Viên</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select" v-model="filterPhai" @change="filterEmployees">
-                            <option value="">Tất cả giới tính</option>
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-outline-secondary w-100" @click="resetFilters">
-                            <i class="fas fa-redo me-2"></i>Reset
-                        </button>
-                    </div>
+        <SearchFilter 
+            v-model="searchQuery"
+            placeholder="Tìm theo tên, email, SĐT..."
+            @update:modelValue="filterEmployees"
+            @reset="resetFilters"
+        >
+            <template #filters>
+                <div class="col-md-3">
+                    <select class="form-select" v-model="filterChucVu" @change="filterEmployees">
+                        <option value="">Tất cả chức vụ</option>
+                        <option value="Admin">Admin</option>
+                        <option value="NhanVien">Nhân Viên</option>
+                    </select>
                 </div>
-            </div>
-        </div>
+                <div class="col-md-3">
+                    <select class="form-select" v-model="filterPhai" @change="filterEmployees">
+                        <option value="">Tất cả giới tính</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                </div>
+            </template>
+        </SearchFilter>
 
         <!-- Statistics Cards -->
         <div class="row mb-4">
@@ -100,126 +89,132 @@
         </div>
 
         <!-- Employees Table -->
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>MSNV</th>
-                                <th>Họ Tên</th>
-                                <th>Email</th>
-                                <th>Số Điện Thoại</th>
-                                <th>Giới Tính</th>
-                                <th>Chức Vụ</th>
-                                <th>Địa Chỉ</th>
-                                <th v-if="isAdmin">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="loading">
-                                <td :colspan="isAdmin ? 8 : 7" class="text-center py-4">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>
-                                    Đang tải dữ liệu...
-                                </td>
-                            </tr>
-                            <tr v-else-if="filteredEmployees.length === 0">
-                                <td :colspan="isAdmin ? 8 : 7" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox me-2"></i>
-                                    Không tìm thấy nhân viên nào
-                                </td>
-                            </tr>
-                            <tr v-else v-for="employee in filteredEmployees" :key="employee._id">
-                                <td>
-                                    <span class="badge bg-secondary">{{ employee.MSNV }}</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar me-2">
-                                            <i class="fas fa-user-circle fa-2x text-muted"></i>
-                                        </div>
-                                        <strong>{{ employee.HoTen }}</strong>
-                                    </div>
-                                </td>
-                                <td>
-                                    <i class="fas fa-envelope me-1 text-muted"></i>
-                                    {{ employee.Email }}
-                                </td>
-                                <td>
-                                    <i class="fas fa-phone me-1 text-muted"></i>
-                                    {{ employee.SoDienThoai }}
-                                </td>
-                                <td>
-                                    <span :class="employee.Phai === 'Nam' ? 'text-primary' : 'text-danger'">
-                                        <i :class="employee.Phai === 'Nam' ? 'fas fa-mars' : 'fas fa-venus'"></i>
-                                        {{ employee.Phai }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge" :class="employee.ChucVu === 'Admin' ? 'bg-success' : 'bg-info'">
-                                        {{ employee.ChucVu }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>
-                                    {{ employee.DiaChiDayDu || '(Chưa cập nhật)' }}
-                                </td>
-                                <td v-if="isAdmin">
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" @click="viewEmployee(employee)"
-                                            title="Xem chi tiết">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-outline-warning" @click="editEmployee(employee)"
-                                            title="Sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger" @click="deleteEmployee(employee)"
-                                            title="Xóa">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <DataTable
+            title="Danh Sách Nhân Viên"
+            :columns="tableColumns"
+            :data="filteredEmployees"
+            :loading="loading"
+            item-name="nhân viên"
+        >
+            <!-- MSNV column -->
+            <template #MSNV="{ value }">
+                <span class="badge bg-primary bg-opacity-75">{{ value }}</span>
+            </template>
+            
+            <!-- Họ tên column -->
+            <template #HoTen="{ item }">
+                <div class="d-flex align-items-center">
+                    <div class="avatar me-2">
+                        <img v-if="item.Avatar" :src="`http://localhost:5000${item.Avatar}`" 
+                            class="rounded-circle border" width="36" height="36" 
+                            style="object-fit: cover;" alt="Avatar" />
+                        <div v-else class="bg-light rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 36px; height: 36px;">
+                            <i class="fas fa-user text-muted"></i>
+                        </div>
+                    </div>
+                    <strong class="text-dark">{{ item.HoTen }}</strong>
                 </div>
-            </div>
-        </div>
+            </template>
+            
+            <!-- Email column -->
+            <template #Email="{ value }">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="fas fa-envelope me-2"></i>
+                    <span class="small">{{ value }}</span>
+                </div>
+            </template>
+            
+            <!-- Số điện thoại column -->
+            <template #SoDienThoai="{ value }">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="fas fa-phone me-2"></i>
+                    <span class="small">{{ value }}</span>
+                </div>
+            </template>
+            
+            <!-- Giới tính column -->
+            <template #Phai="{ value }">
+                <span :class="value === 'Nam' ? 'text-primary' : 'text-danger'">
+                    <i :class="value === 'Nam' ? 'fas fa-mars' : 'fas fa-venus'" class="me-1"></i>
+                    {{ value }}
+                </span>
+            </template>
+            
+            <!-- Chức vụ column -->
+            <template #ChucVu="{ value }">
+                <span class="badge" :class="value === 'Admin' ? 'bg-success' : 'bg-info'">
+                    {{ value }}
+                </span>
+            </template>
+
+            <!-- Actions column -->
+            <template #actions="{ item }">
+                <div v-if="isAdmin" class="d-flex justify-content-center gap-1">
+                    <button class="btn btn-outline-primary btn-sm" @click="viewEmployee(item)"
+                        title="Xem chi tiết">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" @click="editEmployee(item)"
+                        title="Chỉnh sửa">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" @click="deleteEmployee(item)"
+                        title="Xóa">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </template>
+        </DataTable>
 
         <!-- Add/Edit Modal -->
         <div class="modal fade" id="employeeModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title">
                             <i class="fas fa-user-plus me-2"></i>
                             {{ isEditMode ? 'Cập Nhật Nhân Viên' : 'Thêm Nhân Viên Mới' }}
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <form @submit.prevent="saveEmployee">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Họ Tên <span class="text-danger">*</span></label>
+                                    <label class="form-label">
+                                        <i class="fas fa-user me-1 text-primary"></i>
+                                        Họ Tên <span class="text-danger">*</span>
+                                    </label>
                                     <input type="text" class="form-control" v-model="formData.HoTen" required />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <label class="form-label">
+                                        <i class="fas fa-envelope me-1 text-info"></i>
+                                        Email <span class="text-danger">*</span>
+                                    </label>
                                     <input type="email" class="form-control" v-model="formData.Email" required />
                                 </div>
                                 <div class="col-md-6" v-if="!isEditMode">
-                                    <label class="form-label">Mật Khẩu <span class="text-danger">*</span></label>
+                                    <label class="form-label">
+                                        <i class="fas fa-lock me-1 text-warning"></i>
+                                        Mật Khẩu <span class="text-danger">*</span>
+                                    </label>
                                     <input type="password" class="form-control" v-model="formData.Password"
                                         :required="!isEditMode" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Số Điện Thoại <span class="text-danger">*</span></label>
+                                    <label class="form-label">
+                                        <i class="fas fa-phone me-1 text-success"></i>
+                                        Số Điện Thoại <span class="text-danger">*</span>
+                                    </label>
                                     <input type="text" class="form-control" v-model="formData.SoDienThoai" required />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Giới Tính <span class="text-danger">*</span></label>
+                                    <label class="form-label">
+                                        <i class="fas fa-venus-mars me-1 text-secondary"></i>
+                                        Giới Tính <span class="text-danger">*</span>
+                                    </label>
                                     <select class="form-select" v-model="formData.Phai" required>
                                         <option value="">Chọn giới tính</option>
                                         <option value="Nam">Nam</option>
@@ -243,7 +238,8 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>
                             Hủy
                         </button>
                         <button type="button" class="btn btn-primary" @click="saveEmployee">
@@ -259,52 +255,57 @@
         <div class="modal fade" id="viewModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-info text-white">
                         <h5 class="modal-title">
-                            <i class="fas fa-user-circle me-2"></i>
+                            <i class="fas fa-info-circle me-2"></i>
                             Chi Tiết Nhân Viên
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body" v-if="selectedEmployee">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-3">
-                                <i class="fas fa-user-circle fa-6x text-muted"></i>
-                                <h5 class="mt-3">{{ selectedEmployee.HoTen }}</h5>
-                                <span class="badge"
-                                    :class="selectedEmployee.ChucVu === 'Admin' ? 'bg-success' : 'bg-info'">
-                                    {{ selectedEmployee.ChucVu }}
-                                </span>
+                        <div class="employee-profile">
+                            <div class="profile-section">
+                                <div class="avatar-section">
+                                    <img v-if="selectedEmployee.Avatar" :src="`http://localhost:5000${selectedEmployee.Avatar}`" 
+                                        class="profile-img" alt="Avatar" />
+                                    <i v-else class="fas fa-user-circle fa-4x text-muted"></i>
+                                </div>
+                                <div class="basic-info">
+                                    <h4>{{ selectedEmployee.HoTen }}</h4>
+                                    <span class="badge" :class="selectedEmployee.ChucVu === 'Admin' ? 'bg-success' : 'bg-info'">
+                                        {{ selectedEmployee.ChucVu }}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="col-md-8">
-                                <table class="table table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <th width="40%">MSNV:</th>
-                                            <td>{{ selectedEmployee.MSNV }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Email:</th>
-                                            <td>{{ selectedEmployee.Email }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Số Điện Thoại:</th>
-                                            <td>{{ selectedEmployee.SoDienThoai }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Giới Tính:</th>
-                                            <td>{{ selectedEmployee.Phai }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Địa Chỉ:</th>
-                                            <td>{{ selectedEmployee.DiaChiDayDu || '(Chưa cập nhật)' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Ngày Tạo:</th>
-                                            <td>{{ formatDate(selectedEmployee.createdAt) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            
+                            <div class="details-section">
+                                <div class="detail-item">
+                                    <label>MSNV:</label>
+                                    <span class="badge bg-secondary">{{ selectedEmployee.MSNV }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Email:</label>
+                                    <span>{{ selectedEmployee.Email }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Số Điện Thoại:</label>
+                                    <span>{{ selectedEmployee.SoDienThoai }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Giới Tính:</label>
+                                    <span :class="selectedEmployee.Phai === 'Nam' ? 'text-primary' : 'text-danger'">
+                                        <i :class="selectedEmployee.Phai === 'Nam' ? 'fas fa-mars' : 'fas fa-venus'"></i>
+                                        {{ selectedEmployee.Phai }}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Địa Chỉ:</label>
+                                    <span>{{ selectedEmployee.DiaChiDayDu || '(Chưa cập nhật)' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Ngày Tạo:</label>
+                                    <span>{{ formatDate(selectedEmployee.createdAt) }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -317,6 +318,8 @@
 <script>
 import { useToast } from 'vue-toastification';
 import NhanVienService from '@/services/nhanvien.service';
+import SearchFilter from '@/components/SearchFilter.vue';
+import DataTable from '@/components/DataTable.vue';
 import AddressSelect from '@/components/AddressSelect.vue';
 import { Modal } from 'bootstrap';
 
@@ -324,6 +327,8 @@ export default {
     name: 'Employees',
 
     components: {
+        SearchFilter,
+        DataTable,
         AddressSelect,
     },
 
@@ -356,6 +361,15 @@ export default {
             },
             employeeModal: null,
             viewModal: null,
+            tableColumns: [
+                { key: 'MSNV', label: 'MSNV', width: '10%' },
+                { key: 'HoTen', label: 'Họ Tên', width: '20%' },
+                { key: 'Email', label: 'Email', width: '20%' },
+                { key: 'SoDienThoai', label: 'Số Điện Thoại', width: '15%' },
+                { key: 'Phai', label: 'Giới Tính', width: '10%' },
+                { key: 'ChucVu', label: 'Chức Vụ', width: '10%' },
+                { key: 'DiaChiDayDu', label: 'Địa Chỉ', width: '20%' }
+            ],
         };
     },
 
@@ -363,6 +377,29 @@ export default {
         isAdmin() {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             return user.ChucVu === 'Admin';
+        },
+        
+        userRole() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            return user.ChucVu || '';
+        },
+        
+        tableColumns() {
+            const columns = [
+                { key: 'MSNV', label: 'Mã NV', width: '10%' },
+                { key: 'HoTen', label: 'Họ Tên', width: '20%' },
+                { key: 'Email', label: 'Email', width: '20%' },
+                { key: 'SoDienThoai', label: 'Số ĐT', width: '12%' },
+                { key: 'Phai', label: 'Giới Tính', width: '10%' },
+                { key: 'ChucVu', label: 'Chức Vụ', width: '12%' },
+                { key: 'DiaChiDayDu', label: 'Địa Chỉ', width: '16%' }
+            ];
+            
+            if (this.isAdmin) {
+                columns.push({ key: 'actions', label: 'Thao Tác', width: '10%' });
+            }
+            
+            return columns;
         },
 
         totalEmployees() {
@@ -518,27 +555,27 @@ export default {
 
 <style scoped>
 .employees-page {
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .page-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .stat-card {
     background: white;
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -551,18 +588,18 @@ export default {
 }
 
 .stat-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .stat-info h3 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     margin: 0;
     color: #2c3e50;
@@ -572,6 +609,106 @@ export default {
     margin: 0;
     color: #6c757d;
     font-size: 0.875rem;
+}
+
+.filter-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.filter-card .form-select {
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+}
+
+.filter-card .form-select:focus {
+    background: white;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Modal Detail Styles */
+.employee-profile {
+    padding: 0;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+}
+
+.avatar-section {
+    flex-shrink: 0;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e2e8f0;
+}
+
+.basic-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2d3748;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item label {
+    font-weight: 600;
+    color: #4a5568;
+    margin: 0;
+    flex: 0 0 40%;
+}
+
+.detail-item span {
+    color: #2d3748;
+    word-break: break-word;
+    text-align: right;
+}
+
+.modal-dialog {
+    max-width: 600px;
+}
+
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 1rem;
+        max-width: none;
+    }
+    
+    .profile-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .detail-item span {
+        text-align: left;
+    }
 }
 
 .table th {

@@ -36,6 +36,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/bookborrow/manager/admin/publishers",
+    name: "admin.publishers",
+    component: () => import("../views/nhaxuatban.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/bookborrow/manager/login",
   },

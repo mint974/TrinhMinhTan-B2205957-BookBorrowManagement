@@ -1,30 +1,49 @@
-// src/services/publisher.service.js
 import createApiClient from "./api.service";
 
-class PublisherService {
-  constructor(baseUrl = "/api/publishers") {
+class NhaXuatBanService {
+  constructor(baseUrl = "/api/nhaxuatban") {
     this.api = createApiClient(baseUrl);
   }
 
-  async getAll() {
-    return (await this.api.get("/")).data;
+  async getAll(params = {}) {
+    const response = await this.api.get("/", { params });
+    return response.data;
   }
 
-  async get(id) {
-    return (await this.api.get(`/${id}`)).data;
+  async getAllForSelect() {
+    const response = await this.api.get("/select");
+    return response.data.data;
+  }
+
+  async getById(id) {
+    const response = await this.api.get(`/${id}`);
+    return response.data.data;
+  }
+
+  async getByMaNXB(maNXB) {
+    const response = await this.api.get(`/ma/${maNXB}`);
+    return response.data.data;
   }
 
   async create(data) {
-    return (await this.api.post("/", data)).data;
+    const response = await this.api.post("/", data);
+    return response.data.data;
   }
 
   async update(id, data) {
-    return (await this.api.put(`/${id}`, data)).data;
+    const response = await this.api.put(`/${id}`, data);
+    return response.data.data;
   }
 
   async delete(id) {
-    return (await this.api.delete(`/${id}`)).data;
+    const response = await this.api.delete(`/${id}`);
+    return response.data;
+  }
+
+  async hardDelete(id) {
+    const response = await this.api.delete(`/${id}/hard`);
+    return response.data;
   }
 }
 
-export default new PublisherService();
+export default new NhaXuatBanService();
