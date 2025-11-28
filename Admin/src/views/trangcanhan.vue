@@ -159,6 +159,7 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
 import NhanVienService from '@/services/nhanvien.service';
 import AddressSelect from '@/components/AddressSelect.vue';
 
@@ -167,6 +168,11 @@ export default {
 
     components: {
         AddressSelect,
+    },
+
+    setup() {
+        const toast = useToast();
+        return { toast };
     },
 
     data() {
@@ -224,7 +230,7 @@ export default {
                 };
             } catch (error) {
                 console.error('Error loading profile:', error);
-                alert('Lỗi khi tải thông tin profile');
+                this.toast.error('Lỗi khi tải thông tin profile');
             }
         },
 
@@ -238,22 +244,22 @@ export default {
                 };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
 
-                alert('Cập nhật thông tin thành công!');
+                this.toast.success('Cập nhật thông tin thành công!');
                 await this.loadProfile();
             } catch (error) {
                 console.error('Error updating profile:', error);
-                alert(error.response?.data?.message || 'Lỗi khi cập nhật thông tin');
+                this.toast.error(error.response?.data?.message || 'Lỗi khi cập nhật thông tin');
             }
         },
 
         async changePassword() {
             if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-                alert('Mật khẩu xác nhận không khớp!');
+                this.toast.warning('Mật khẩu xác nhận không khớp!');
                 return;
             }
 
             if (this.passwordForm.newPassword.length < 6) {
-                alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+                this.toast.warning('Mật khẩu mới phải có ít nhất 6 ký tự!');
                 return;
             }
 
@@ -263,7 +269,7 @@ export default {
                     this.passwordForm.newPassword
                 );
 
-                alert('Đổi mật khẩu thành công!');
+                this.toast.success('Đổi mật khẩu thành công!');
                 this.passwordForm = {
                     oldPassword: '',
                     newPassword: '',
@@ -271,7 +277,7 @@ export default {
                 };
             } catch (error) {
                 console.error('Error changing password:', error);
-                alert(error.response?.data?.message || 'Lỗi khi đổi mật khẩu');
+                this.toast.error(error.response?.data?.message || 'Lỗi khi đổi mật khẩu');
             }
         },
 
@@ -280,22 +286,22 @@ export default {
             if (!file) return;
 
             if (!file.type.match('image.*')) {
-                alert('Vui lòng chọn file ảnh!');
+                this.toast.warning('Vui lòng chọn file ảnh!');
                 return;
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                alert('File ảnh không được vượt quá 5MB!');
+                this.toast.warning('File ảnh không được vượt quá 5MB!');
                 return;
             }
 
             try {
                 await NhanVienService.updateAvatar(file);
-                alert('Cập nhật avatar thành công!');
+                this.toast.success('Cập nhật avatar thành công!');
                 await this.loadProfile();
             } catch (error) {
                 console.error('Error updating avatar:', error);
-                alert(error.response?.data?.message || 'Lỗi khi cập nhật avatar');
+                this.toast.error(error.response?.data?.message || 'Lỗi khi cập nhật avatar');
             }
         },
 

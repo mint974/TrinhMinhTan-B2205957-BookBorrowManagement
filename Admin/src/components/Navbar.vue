@@ -61,10 +61,16 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
 import NhanVienService from '@/services/nhanvien.service';
 
 export default {
     name: "Navbar",
+
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
 
     data() {
         return {
@@ -102,6 +108,7 @@ export default {
             if (confirm("Bạn có chắc muốn đăng xuất?")) {
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
+                this.toast.info("Đã đăng xuất thành công");
                 this.$router.push("/bookborrow/manager/login");
             }
         }

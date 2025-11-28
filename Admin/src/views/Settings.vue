@@ -79,10 +79,16 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
 import DiaChiService from '@/services/diachi.service';
 
 export default {
     name: 'Settings',
+
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
 
     data() {
         return {
@@ -101,10 +107,16 @@ export default {
             try {
                 const result = await DiaChiService.syncData();
                 this.syncStats = result.stats;
-                alert(`Đồng bộ thành công!\n- Tỉnh/TP: ${result.stats.provinces}\n- Quận/Huyện: ${result.stats.districts}\n- Phường/Xã: ${result.stats.wards}`);
+                this.toast.success(
+                    `Đồng bộ thành công!\n` +
+                    `Tỉnh/TP: ${result.stats.provinces}\n` +
+                    `Quận/Huyện: ${result.stats.districts}\n` +
+                    `Phường/Xã: ${result.stats.wards}`,
+                    { timeout: 5000 }
+                );
             } catch (error) {
                 console.error('Error syncing address:', error);
-                alert('Lỗi khi đồng bộ dữ liệu địa chỉ');
+                this.toast.error('Lỗi khi đồng bộ dữ liệu địa chỉ');
             } finally {
                 this.syncing = false;
             }

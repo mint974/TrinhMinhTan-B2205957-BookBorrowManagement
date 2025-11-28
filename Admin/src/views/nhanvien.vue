@@ -315,6 +315,7 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
 import NhanVienService from '@/services/nhanvien.service';
 import AddressSelect from '@/components/AddressSelect.vue';
 import { Modal } from 'bootstrap';
@@ -324,6 +325,11 @@ export default {
 
     components: {
         AddressSelect,
+    },
+
+    setup() {
+        const toast = useToast();
+        return { toast };
     },
 
     data() {
@@ -386,7 +392,7 @@ export default {
                 this.filteredEmployees = [...this.employees];
             } catch (error) {
                 console.error('Error loading employees:', error);
-                alert('Lỗi khi tải danh sách nhân viên');
+                this.toast.error('Lỗi khi tải danh sách nhân viên');
             } finally {
                 this.loading = false;
             }
@@ -472,17 +478,17 @@ export default {
             try {
                 if (this.isEditMode) {
                     await NhanVienService.update(this.selectedEmployee._id, this.formData);
-                    alert('Cập nhật nhân viên thành công!');
+                    this.toast.success('Cập nhật nhân viên thành công!');
                 } else {
                     await NhanVienService.create(this.formData);
-                    alert('Thêm nhân viên thành công!');
+                    this.toast.success('Thêm nhân viên thành công!');
                 }
 
                 this.employeeModal.hide();
                 await this.loadEmployees();
             } catch (error) {
                 console.error('Error saving employee:', error);
-                alert(error.response?.data?.message || 'Lỗi khi lưu nhân viên');
+                this.toast.error(error.response?.data?.message || 'Lỗi khi lưu nhân viên');
             }
         },
 
@@ -495,11 +501,11 @@ export default {
 
             try {
                 await NhanVienService.delete(employee._id);
-                alert('Xóa nhân viên thành công!');
+                this.toast.success('Xóa nhân viên thành công!');
                 await this.loadEmployees();
             } catch (error) {
                 console.error('Error deleting employee:', error);
-                alert('Lỗi khi xóa nhân viên');
+                this.toast.error('Lỗi khi xóa nhân viên');
             }
         },
 

@@ -93,14 +93,22 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
+
 export default {
     name: "Sidebar",
+
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
 
     methods: {
         handleLogout() {
             if (confirm("Bạn có chắc muốn đăng xuất?")) {
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
+                this.toast.info("Đã đăng xuất thành công");
                 this.$router.push("/bookborrow/manager/login");
             }
         }

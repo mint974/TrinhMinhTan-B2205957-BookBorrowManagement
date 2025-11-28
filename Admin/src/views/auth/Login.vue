@@ -83,10 +83,17 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
 import AuthService from "@/services/auth.service";
 
 export default {
     name: "Login",
+
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
+
     data() {
         return {
             user: {
@@ -109,12 +116,15 @@ export default {
                     localStorage.setItem("token", res.token);
                     localStorage.setItem("user", JSON.stringify(res.nhanvien));
 
+                    this.toast.success('Đăng nhập thành công!');
                     this.$router.push("/bookborrow/manager/admin");
                 } else {
                     this.error = "Đăng nhập thất bại. Vui lòng thử lại.";
+                    this.toast.error(this.error);
                 }
             } catch (err) {
                 this.error = err.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng thử lại.";
+                this.toast.error(this.error);
                 console.error("Login error:", err);
             }
         },
