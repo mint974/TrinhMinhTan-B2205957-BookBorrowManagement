@@ -12,7 +12,10 @@ class NhaXuatBanService {
     if (search) {
       filter.$or = [
         { TenNXB: { $regex: search, $options: "i" } },
-        { DiaChi: { $regex: search, $options: "i" } },
+        { MaTinh: { $regex: search, $options: "i" } },
+        { MaQuan: { $regex: search, $options: "i" } },
+        { MaPhuong: { $regex: search, $options: "i" } },
+        { DiaChiChiTiet: { $regex: search, $options: "i" } },
         { Email: { $regex: search, $options: "i" } },
         { SoDienThoai: { $regex: search, $options: "i" } },
       ];
@@ -79,7 +82,7 @@ class NhaXuatBanService {
 
   static async getAllForSelect() {
     return await NhaXuatBan.find({ deleted: false })
-      .select("MaNXB TenNXB DiaChi SoDienThoai")
+      .select("MaNXB TenNXB MaTinh MaQuan MaPhuong DiaChiChiTiet SoDienThoai")
       .sort({ TenNXB: 1 });
   }
 }

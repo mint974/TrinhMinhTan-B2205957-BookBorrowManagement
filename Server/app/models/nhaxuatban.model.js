@@ -10,7 +10,10 @@ const NhaXuatBanSchema = new mongoose.Schema(
       },
     },
     TenNXB: { type: String, required: true },
-    DiaChi: { type: String },
+    MaTinh: { type: String },
+    MaQuan: { type: String },
+    MaPhuong: { type: String },
+    DiaChiChiTiet: { type: String },
     SoDienThoai: { type: String },
     Email: { type: String },
     NguoiTao: {

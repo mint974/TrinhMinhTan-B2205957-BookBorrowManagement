@@ -30,16 +30,16 @@
                     <!-- Email -->
                     <div class="mb-3 mt-3">
                         <!-- <label class="form-label fw-semibold">Email</label> -->
-                        <input type="email" v-model="user.email" class="form-control form-control-lg rounded-pill"
-                            placeholder="Nhập email của bạn" required />
+                        <input type="email" id="email" name="email" v-model="user.email" class="form-control form-control-lg rounded-pill"
+                            placeholder="Nhập email của bạn" required autocomplete="email" />
                     </div>
 
                     <!-- Password -->
                     <div class="mb-2 position-relative">
                         <!-- <label class="form-label fw-semibold">Mật khẩu</label> -->
-                        <input :type="showPass ? 'text' : 'password'" v-model="user.password"
+                        <input :type="showPass ? 'text' : 'password'" id="password" name="password" v-model="user.password"
                             class="form-control form-control-lg rounded-pill pe-5" placeholder="Nhập mật khẩu của bạn"
-                            required />
+                            required autocomplete="current-password" />
 
                         <i class="fa-solid" :class="showPass ? 'fa-eye-slash' : 'fa-eye'" @click="showPass = !showPass"
                             style="cursor: pointer; position: absolute; right: 15px; top: 55%; transform: translateY(-50%);">
@@ -125,7 +125,6 @@ export default {
             } catch (err) {
                 this.error = err.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng thử lại.";
                 this.toast.error(this.error);
-                console.error("Login error:", err);
             }
         },
     },

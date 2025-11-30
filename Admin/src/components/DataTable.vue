@@ -99,11 +99,16 @@ export default {
     components: {
         ConfirmDeleteModal
     },
+    emits: ['view', 'edit', 'delete'],
     props: {
         title: String,
         columns: Array,
         data: Array,
         hasPhoto: Boolean,
+        loading: {
+            type: Boolean,
+            default: false
+        },
         itemName: {
             type: String,
             default: 'item'

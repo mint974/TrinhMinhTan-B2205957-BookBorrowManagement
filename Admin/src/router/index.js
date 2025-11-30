@@ -42,6 +42,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/bookborrow/manager/admin/categories",
+    name: "admin.categories",
+    component: () => import("../views/danhmuc.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/bookborrow/manager/login",
   },
