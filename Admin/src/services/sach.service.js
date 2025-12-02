@@ -1,30 +1,39 @@
-// src/services/book.service.js
 import createApiClient from "./api.service";
 
-class BookService {
-  constructor(baseUrl = "/api/books") {
+class SachService {
+  constructor(baseUrl = "/api/sach") {
     this.api = createApiClient(baseUrl);
   }
 
-  async getAll() {
-    return (await this.api.get("/")).data;
+  async getAll(params = {}) {
+    const response = await this.api.get("/", { params });
+    return response.data.data;
   }
 
-  async get(id) {
-    return (await this.api.get(`/${id}`)).data;
+  async getById(id) {
+    const response = await this.api.get(`/${id}`);
+    return response.data.data;
   }
 
   async create(data) {
-    return (await this.api.post("/", data)).data;
+    const response = await this.api.post("/", data);
+    return response.data.data;
   }
 
   async update(id, data) {
-    return (await this.api.put(`/${id}`, data)).data;
+    const response = await this.api.put(`/${id}`, data);
+    return response.data.data;
   }
 
   async delete(id) {
-    return (await this.api.delete(`/${id}`)).data;
+    const response = await this.api.delete(`/${id}`);
+    return response.data;
+  }
+
+  async search(query) {
+    const response = await this.api.get("/search", { params: { q: query } });
+    return response.data.data;
   }
 }
 
-export default new BookService();
+export default new SachService();

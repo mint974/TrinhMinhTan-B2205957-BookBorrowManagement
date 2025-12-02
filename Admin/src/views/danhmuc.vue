@@ -1,19 +1,13 @@
 <template>
     <div class="categories-page">
         <!-- Header -->
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">
-                    <i class="fas fa-list me-2"></i>
-                    Quản Lý Danh Mục
-                </h2>
-                <p class="text-muted mb-0">Quản lý thông tin danh mục sách trong hệ thống</p>
-            </div>
-            <button class="btn btn-primary" @click="openAddModal">
-                <i class="fas fa-plus me-2"></i>
-                Thêm Danh Mục
-            </button>
-        </div>
+        <PageHeader 
+            title="Quản Lý Danh Mục"
+            subtitle="Quản lý thông tin danh mục sách trong hệ thống"
+            icon="fas fa-list"
+            addButtonText="Thêm Danh Mục"
+            @add="openAddModal"
+        />
 
         <!-- Search & Filter -->
         <SearchFilter 
@@ -238,6 +232,7 @@
 <script>
 import { useToast } from 'vue-toastification';
 import DanhMucService from '@/services/danhmuc.service';
+import PageHeader from '@/components/PageHeader.vue';
 import SearchFilter from '@/components/SearchFilter.vue';
 import DataTable from '@/components/DataTable.vue';
 import { Modal } from 'bootstrap';
@@ -246,6 +241,7 @@ export default {
     name: 'Categories',
 
     components: {
+        PageHeader,
         SearchFilter,
         DataTable,
     },
@@ -407,20 +403,6 @@ export default {
 <style scoped>
 .categories-page {
     padding: 1rem;
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.25rem;
 }
 
 .stat-card {

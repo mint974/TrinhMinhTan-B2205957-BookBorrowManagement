@@ -7,7 +7,7 @@ class NhaXuatBanService {
 
   async getAll(params = {}) {
     const response = await this.api.get("/", { params });
-    return response.data;
+    return response.data.data;
   }
 
   async getAllForSelect() {

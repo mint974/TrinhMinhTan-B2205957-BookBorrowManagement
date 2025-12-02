@@ -1,19 +1,13 @@
 <template>
     <div class="publishers-page">
         <!-- Header -->
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">
-                    <i class="fas fa-building me-2"></i>
-                    Quản Lý Nhà Xuất Bản
-                </h2>
-                <p class="text-muted mb-0">Quản lý thông tin nhà xuất bản trong hệ thống</p>
-            </div>
-            <button class="btn btn-primary" @click="openAddModal">
-                <i class="fas fa-plus me-2"></i>
-                Thêm Nhà Xuất Bản
-            </button>
-        </div>
+        <PageHeader 
+            title="Quản Lý Nhà Xuất Bản"
+            subtitle="Quản lý thông tin nhà xuất bản trong hệ thống"
+            icon="fas fa-building"
+            addButtonText="Thêm Nhà Xuất Bản"
+            @add="openAddModal"
+        />
 
         <!-- Search & Filter -->
         <SearchFilter 
@@ -244,6 +238,7 @@
 <script>
 import { useToast } from 'vue-toastification';
 import NhaXuatBanService from '@/services/nhaxuatban.service';
+import PageHeader from '@/components/PageHeader.vue';
 import SearchFilter from '@/components/SearchFilter.vue';
 import DataTable from '@/components/DataTable.vue';
 import AddressSelect from '@/components/AddressSelect.vue';
@@ -253,6 +248,7 @@ export default {
     name: 'Publishers',
 
     components: {
+        PageHeader,
         SearchFilter,
         DataTable,
         AddressSelect,
@@ -490,20 +486,6 @@ export default {
 <style scoped>
 .publishers-page {
     padding: 1rem;
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.25rem;
 }
 
 .stat-card {

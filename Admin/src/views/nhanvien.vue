@@ -1,19 +1,14 @@
 <template>
     <div class="employees-page">
         <!-- Header -->
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">
-                    <i class="fas fa-users-cog me-2"></i>
-                    Quản Lý Nhân Viên
-                </h2>
-                <p class="text-muted mb-0">Quản lý thông tin nhân viên trong hệ thống</p>
-            </div>
-            <button v-if="isAdmin" class="btn btn-primary" @click="openAddModal">
-                <i class="fas fa-plus me-2"></i>
-                Thêm Nhân Viên
-            </button>
-        </div>
+        <PageHeader 
+            title="Quản Lý Nhân Viên"
+            subtitle="Quản lý thông tin nhân viên trong hệ thống"
+            icon="fas fa-users-cog"
+            addButtonText="Thêm Nhân Viên"
+            :showAddButton="isAdmin"
+            @add="openAddModal"
+        />
 
         <!-- Search & Filter -->
         <SearchFilter 
@@ -318,6 +313,7 @@
 <script>
 import { useToast } from 'vue-toastification';
 import NhanVienService from '@/services/nhanvien.service';
+import PageHeader from '@/components/PageHeader.vue';
 import SearchFilter from '@/components/SearchFilter.vue';
 import DataTable from '@/components/DataTable.vue';
 import AddressSelect from '@/components/AddressSelect.vue';
@@ -327,6 +323,7 @@ export default {
     name: 'Employees',
 
     components: {
+        PageHeader,
         SearchFilter,
         DataTable,
         AddressSelect,
@@ -556,20 +553,6 @@ export default {
 <style scoped>
 .employees-page {
     padding: 1rem;
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.25rem;
 }
 
 .stat-card {

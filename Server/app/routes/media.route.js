@@ -38,6 +38,7 @@ const upload = multer({
 });
 
 // Routes
+router.post("/upload", auth, upload.single("file"), controller.create); // Upload file mới (endpoint riêng)
 router.get("/statistics", auth, controller.getStatistics); // Thống kê
 router.get("/loai/:loaiMedia", auth, controller.getByLoaiMedia); // Lọc theo loại
 router.get("/ma/:maMedia", auth, controller.getByMaMedia); // Tìm theo mã

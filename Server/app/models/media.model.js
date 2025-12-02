@@ -15,7 +15,11 @@ const MediaSchema = new mongoose.Schema(
     filePath: { type: String, required: true },
     fileType: { type: String, required: true },
     fileSize: { type: Number },
-
+    Sach: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sach",
+      default: null,
+    },
     MoTa: { type: String, default: "" },
     NguoiTao: {
       type: mongoose.Schema.Types.ObjectId,

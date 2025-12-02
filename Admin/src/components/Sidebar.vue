@@ -1,92 +1,97 @@
 ﻿<template>
-    <div class="sidebar">
+    <div class="sidebar" :class="{ 'collapsed': isCollapsed }">
+        <!-- Toggle Button -->
+        <button class="sidebar-toggle" @click="toggleSidebar">
+            <i class="fas" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+        </button>
+
         <div class="sidebar-header">
             <div class="logo-container">
                 <img src="/images/logo.png" alt="Logo" class="sidebar-logo">
             </div>
-            <span class="sidebar-title">Quản Lý Thư Viện</span>
+            <span class="sidebar-title" v-show="!isCollapsed">Quản Lý Thư Viện</span>
         </div>
 
         <ul class="sidebar-nav">
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin" class="nav-link" exact-active-class="active">
+                <router-link to="/bookborrow/manager/admin" class="nav-link" exact-active-class="active" :title="isCollapsed ? 'Dashboard' : ''">
                     <i class="fas fa-tachometer-alt me-2"></i>
-                    <span>Dashboard</span>
+                    <span v-show="!isCollapsed">Dashboard</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/employees" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/employees" class="nav-link" active-class="active" :title="isCollapsed ? 'Nhân Viên' : ''">
                     <i class="fas fa-users-cog me-2"></i>
-                    <span>Nhân Viên</span>
+                    <span v-show="!isCollapsed">Nhân Viên</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/books" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/books" class="nav-link" active-class="active" :title="isCollapsed ? 'Quản Lý Sách' : ''">
                     <i class="fas fa-book me-2"></i>
-                    <span>Quản Lý Sách</span>
+                    <span v-show="!isCollapsed">Quản Lý Sách</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/readers" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/readers" class="nav-link" active-class="active" :title="isCollapsed ? 'Độc Giả' : ''">
                     <i class="fas fa-users me-2"></i>
-                    <span>Độc Giả</span>
+                    <span v-show="!isCollapsed">Độc Giả</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/publishers" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/publishers" class="nav-link" active-class="active" :title="isCollapsed ? 'Nhà Xuất Bản' : ''">
                     <i class="fas fa-building me-2"></i>
-                    <span>Nhà Xuất Bản</span>
+                    <span v-show="!isCollapsed">Nhà Xuất Bản</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/borrows" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/borrows" class="nav-link" active-class="active" :title="isCollapsed ? 'Phiếu Mượn' : ''">
                     <i class="fas fa-exchange-alt me-2"></i>
-                    <span>Phiếu Mượn</span>
+                    <span v-show="!isCollapsed">Phiếu Mượn</span>
                 </router-link>
             </li>
 
             <li class="nav-divider"></li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/authors" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/authors" class="nav-link" active-class="active" :title="isCollapsed ? 'Tác Giả' : ''">
                     <i class="fas fa-user-edit me-2"></i>
-                    <span>Tác Giả</span>
+                    <span v-show="!isCollapsed">Tác Giả</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/categories" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/categories" class="nav-link" active-class="active" :title="isCollapsed ? 'Danh Mục' : ''">
                     <i class="fas fa-tags me-2"></i>
-                    <span>Danh Mục</span>
+                    <span v-show="!isCollapsed">Danh Mục</span>
                 </router-link>
             </li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/media" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/media" class="nav-link" active-class="active" :title="isCollapsed ? 'Media' : ''">
                     <i class="fas fa-file-alt me-2"></i>
-                    <span>Media</span>
+                    <span v-show="!isCollapsed">Media</span>
                 </router-link>
             </li>
 
             <li class="nav-divider"></li>
 
             <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/settings" class="nav-link" active-class="active">
+                <router-link to="/bookborrow/manager/admin/settings" class="nav-link" active-class="active" :title="isCollapsed ? 'Cài Đặt' : ''">
                     <i class="fas fa-cog me-2"></i>
-                    <span>Cài Đặt</span>
+                    <span v-show="!isCollapsed">Cài Đặt</span>
                 </router-link>
             </li>
         </ul>
 
         <div class="sidebar-footer">
-            <button @click="handleLogout" class="btn btn-outline-light btn-sm w-100">
+            <button @click="handleLogout" class="btn btn-outline-light btn-sm w-100" :title="isCollapsed ? 'Đăng Xuất' : ''">
                 <i class="fas fa-sign-out-alt me-2"></i>
-                Đăng Xuất
+                <span v-show="!isCollapsed">Đăng Xuất</span>
             </button>
         </div>
     </div>
@@ -103,7 +108,20 @@ export default {
         return { toast };
     },
 
+    data() {
+        return {
+            isCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' || false
+        };
+    },
+
     methods: {
+        toggleSidebar() {
+            this.isCollapsed = !this.isCollapsed;
+            localStorage.setItem('sidebarCollapsed', this.isCollapsed);
+            // Emit event để App.vue cập nhật margin
+            this.$emit('toggle', this.isCollapsed);
+        },
+
         handleLogout() {
             if (confirm("Bạn có chắc muốn đăng xuất?")) {
                 localStorage.removeItem("token");
@@ -130,6 +148,39 @@ export default {
     bottom: 0;
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -15px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid white;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.sidebar-toggle i {
+    font-size: 0.75rem;
 }
 
 .sidebar-header {
@@ -139,6 +190,11 @@ export default {
     flex-direction: column;
     align-items: center;
     gap: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header {
+    padding: 1rem 0.5rem;
 }
 
 .logo-container {
@@ -146,6 +202,11 @@ export default {
     display: flex;
     justify-content: center;
     padding: 0.5rem 0;
+    transition: padding 0.3s ease;
+}
+
+.sidebar.collapsed .logo-container {
+    padding: 0;
 }
 
 .sidebar-logo {
@@ -154,7 +215,11 @@ export default {
     max-width: 100%;
     object-fit: contain;
     /* filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); */
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-logo {
+    height: 40px;
 }
 
 .sidebar-logo:hover {
@@ -166,6 +231,7 @@ export default {
     font-weight: 600;
     text-align: center;
     white-space: nowrap;
+    transition: opacity 0.3s ease;
 }
 
 .sidebar-nav {
@@ -189,6 +255,15 @@ export default {
     border-radius: 0.5rem;
     transition: all 0.3s ease;
     font-size: 0.95rem;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+}
+
+.sidebar.collapsed .nav-link i {
+    margin-right: 0 !important;
 }
 
 .nav-link:hover {

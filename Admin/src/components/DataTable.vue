@@ -9,6 +9,22 @@
         </div>
 
         <div class="card-body px-4 pb-4">
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small">Hiển thị:</span>
+                    <select v-model="itemsPerPage" class="form-select form-select-sm" style="width: auto;">
+                        <option :value="10">10</option>
+                        <option :value="20">20</option>
+                        <option :value="50">50</option>
+                    </select>
+                    <span class="text-muted small">dòng/trang</span>
+                </div>
+                <div class="text-muted small">
+                    Hiển thị {{ startIndex + 1 }}-{{ endIndex }} trong tổng số {{ totalItems }} mục
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table align-middle table-hover">
                     <thead>
@@ -20,7 +36,7 @@
                     </thead>
 
                     <tbody>
-                        <tr v-for="item in data" :key="item._id" class="table-row-hover">
+                        <tr v-for="item in paginatedData" :key="item._id" class="table-row-hover">
                             <!-- Ảnh đại diện -->
                             <td v-if="hasPhoto">
                                 <img :src="item.Avatar || defaultAvatar"
@@ -71,7 +87,7 @@
                         </tr>
 
                         <!-- Empty -->
-                        <tr v-if="data.length === 0">
+                        <tr v-if="paginatedData.length === 0">
                             <td :colspan="columns.length + (hasPhoto ? 1 : 0)" class="text-center py-4 text-muted">
                                 Không có dữ liệu để hiển thị
                             </td>
@@ -79,6 +95,37 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <nav v-if="totalPages > 1" class="mt-4">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = 1">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <a class="page-link" href="#" @click.prevent="currentPage--">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    
+                    <li v-for="page in displayedPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+                    </li>
+                    
+                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                        <a class="page-link" href="#" @click.prevent="currentPage++">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = totalPages">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
     
@@ -118,10 +165,43 @@ export default {
         return {
             defaultAvatar: "/images/default-avatar.png",
             selectedItem: null,
-            deleteModal: null
+            deleteModal: null,
+            currentPage: 1,
+            itemsPerPage: 10
         };
     },
     computed: {
+        totalItems() {
+            return this.data.length;
+        },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+        startIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage;
+        },
+        endIndex() {
+            const end = this.startIndex + this.itemsPerPage;
+            return end > this.totalItems ? this.totalItems : end;
+        },
+        paginatedData() {
+            return this.data.slice(this.startIndex, this.endIndex);
+        },
+        displayedPages() {
+            const pages = [];
+            const maxDisplayed = 5;
+            let startPage = Math.max(1, this.currentPage - Math.floor(maxDisplayed / 2));
+            let endPage = Math.min(this.totalPages, startPage + maxDisplayed - 1);
+            
+            if (endPage - startPage + 1 < maxDisplayed) {
+                startPage = Math.max(1, endPage - maxDisplayed + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                pages.push(i);
+            }
+            return pages;
+        },
         deleteModalTitle() {
             if (!this.selectedItem) return 'Xác nhận xóa';
             const itemName = this.selectedItem.TenNXB || this.selectedItem.HoTen || this.selectedItem.Ten || 'item này';
@@ -129,6 +209,17 @@ export default {
         },
         deleteModalMessage() {
             return `Bạn có chắc chắn muốn xóa ${this.itemName} này? Hành động này không thể hoàn tác!`;
+        }
+    },
+    watch: {
+        itemsPerPage() {
+            this.currentPage = 1; // Reset về trang 1 khi thay đổi số dòng
+        },
+        data() {
+            // Reset về trang 1 khi data thay đổi (search, filter)
+            if (this.currentPage > this.totalPages) {
+                this.currentPage = 1;
+            }
         }
     },
     mounted() {
@@ -198,5 +289,32 @@ export default {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.page-link {
+    color: #667eea;
+    border-color: #e3e9f4;
+    padding: 0.375rem 0.75rem;
+}
+
+.page-link:hover {
+    color: #764ba2;
+    background-color: #f8f9ff;
+    border-color: #667eea;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+}
+
+.page-item.disabled .page-link {
+    color: #adb5bd;
+    background-color: #fff;
+    border-color: #e3e9f4;
 }
 </style>
