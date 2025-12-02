@@ -363,9 +363,10 @@ export default {
         async loadPublishers() {
             this.loading = true;
             try {
-                const response = await NhaXuatBanService.getAll();
-                this.publishers = response.data || [];
+                const data = await NhaXuatBanService.getAll();
+                this.publishers = data || [];
                 this.filteredPublishers = [...this.publishers];
+                console.log('Loaded publishers:', this.publishers);
             } catch (error) {
                 console.error('Error loading publishers:', error);
                 this.toast.error('Lỗi khi tải danh sách nhà xuất bản');
