@@ -30,11 +30,18 @@
 
         <div v-if="showForm" class="card p-3 mt-3">
             <h5>{{ current._id ? "Sửa" : "Thêm" }} Độc giả</h5>
-            <input v-model="current.MaDocGia" placeholder="Mã độc giả" class="form-control mb-2" />
-            <input v-model="current.HoLot" placeholder="Họ lót" class="form-control mb-2" />
-            <input v-model="current.Ten" placeholder="Tên" class="form-control mb-2" />
-            <input v-model="current.DienThoai" placeholder="Điện thoại" class="form-control mb-2" />
-            <input v-model="current.DiaChi" placeholder="Địa chỉ" class="form-control mb-2" />
+            <input v-model="current.HoLot" placeholder="Họ lót" class="form-control mb-2" required />
+            <input v-model="current.Ten" placeholder="Tên" class="form-control mb-2" required />
+            <input v-model="current.Email" placeholder="Email" type="email" class="form-control mb-2" required />
+            <input v-if="!current._id" v-model="current.Password" placeholder="Mật khẩu" type="password" class="form-control mb-2" required />
+            <input v-model="current.NgaySinh" placeholder="Ngày sinh" type="date" class="form-control mb-2" required />
+            <select v-model="current.GioiTinh" class="form-control mb-2" required>
+                <option value="">-- Chọn giới tính --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+            </select>
+            <input v-model="current.DienThoai" placeholder="Điện thoại" class="form-control mb-2" required />
+            <input v-model="current.DiaChi" placeholder="Địa chỉ" class="form-control mb-2" required />
             <button class="btn btn-primary me-2" @click="save">Lưu</button>
             <button class="btn btn-secondary" @click="closeForm">Hủy</button>
         </div>

@@ -2,12 +2,7 @@ const DanhMucService = require("../services/danhmuc.service");
 
 exports.create = async (req, res) => {
   try {
-    // Lấy NguoiTao từ user đã đăng nhập (từ middleware auth)
-    const data = {
-      ...req.body,
-      NguoiTao: req.user.id
-    };
-    const category = await DanhMucService.create(data);
+    const category = await DanhMucService.create(req.body);
     res.status(201).json({
       success: true,
       message: 'Tạo danh mục thành công',

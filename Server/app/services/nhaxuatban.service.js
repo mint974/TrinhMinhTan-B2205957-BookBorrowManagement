@@ -24,7 +24,6 @@ class NhaXuatBanService {
     const skip = (page - 1) * limit;
     const total = await NhaXuatBan.countDocuments(filter);
     const data = await NhaXuatBan.find(filter)
-      .populate("NguoiTao", "TenNV Email")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -41,22 +40,15 @@ class NhaXuatBanService {
   }
 
   static async findById(id) {
-    return await NhaXuatBan.findOne({ _id: id, deleted: false }).populate(
-      "NguoiTao",
-      "TenNV Email"
-    );
+    return await NhaXuatBan.findOne({ _id: id, deleted: false });
   }
 
   static async findByMaNXB(maNXB) {
-    return await NhaXuatBan.findOne({ MaNXB: maNXB, deleted: false }).populate(
-      "NguoiTao",
-      "TenNV Email"
-    );
+    return await NhaXuatBan.findOne({ MaNXB: maNXB, deleted: false });
   }
 
   static async update(id, data) {
     delete data.MaNXB;
-    delete data.NguoiTao;
 
     return await NhaXuatBan.findOneAndUpdate(
       { _id: id, deleted: false },
@@ -65,7 +57,7 @@ class NhaXuatBanService {
         new: true,
         runValidators: true,
       }
-    ).populate("NguoiTao", "TenNV Email");
+    );
   }
 
   static async softDelete(id) {

@@ -12,11 +12,6 @@ const DanhMucSchema = new mongoose.Schema(
     },
     TenDanhMuc: { type: String, required: true },
     MoTa: { type: String, default: "" },
-    NguoiTao: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "NhanVien",
-      required: true,
-    },
     deleted: { type: Boolean, default: false },
   },
 

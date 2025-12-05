@@ -8,7 +8,10 @@ class SachService {
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
       .populate('NguoiTao', 'HoTen Email')
-      .populate('medias');
+      .populate({
+        path: 'medias',
+        match: { deleted: false }
+      });
   }
 
   // Lấy danh sách sách (không lấy bản đã xóa)
@@ -17,7 +20,10 @@ class SachService {
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
       .populate('NguoiTao', 'HoTen Email')
-      .populate('medias')
+      .populate({
+        path: 'medias',
+        match: { deleted: false }
+      })
       .sort({ createdAt: -1 });
   }
 
@@ -27,7 +33,10 @@ class SachService {
       .populate('NhaXuatBan', 'TenNXB MaNXB DiaChi')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc MoTa')
       .populate('NguoiTao', 'HoTen Email')
-      .populate('medias');
+      .populate({
+        path: 'medias',
+        match: { deleted: false }
+      });
   }
 
   // Cập nhật sách
@@ -38,7 +47,10 @@ class SachService {
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
       .populate('NguoiTao', 'HoTen Email')
-      .populate('medias');
+      .populate({
+        path: 'medias',
+        match: { deleted: false }
+      });
   }
 
   // Xóa mềm sách

@@ -21,7 +21,6 @@ exports.create = async (req, res, next) => {
     const mediaData = {
       TenMedia,
       LoaiMedia,
-      NguoiTao: req.user.id,
       MoTa: MoTa || "",
       Sach: Sach || null,
       filePath: req.file.path,

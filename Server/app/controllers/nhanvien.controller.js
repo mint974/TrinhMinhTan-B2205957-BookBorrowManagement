@@ -191,7 +191,7 @@ exports.updateAvatar = async (req, res, next) => {
       return res.status(400).json({ message: "Vui lòng chọn ảnh" });
     }
 
-    const avatarPath = `/uploads/${req.file.filename}`;
+    const avatarPath = `/uploads/avatar/${req.file.filename}`;
     const updated = await NhanVienService.updateAvatar(req.user.id, avatarPath);
 
     if (!updated) {

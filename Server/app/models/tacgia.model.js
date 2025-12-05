@@ -14,11 +14,6 @@ const TacGiaSchema = new mongoose.Schema(
     TieuSu: { type: String },
 
     deleted: { type: Boolean, default: false },
-    NguoiTao: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "NhanVien",
-      required: true,
-    },
   },
   {
     timestamps: true,

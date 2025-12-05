@@ -27,7 +27,6 @@ class MediaService {
     const skip = (page - 1) * limit;
     const total = await Media.countDocuments(filter);
     const data = await Media.find(filter)
-      .populate("NguoiTao", "TenNV Email")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -45,37 +44,29 @@ class MediaService {
 
   // Lấy media theo ID
   static async findById(id) {
-    return await Media.findOne({ _id: id, deleted: false }).populate(
-      "NguoiTao",
-      "TenNV Email"
-    );
+    return await Media.findOne({ _id: id, deleted: false });
   }
 
   // Lấy media theo MaMedia
   static async findByMaMedia(maMedia) {
-    return await Media.findOne({ MaMedia: maMedia, deleted: false }).populate(
-      "NguoiTao",
-      "TenNV Email"
-    );
+    return await Media.findOne({ MaMedia: maMedia, deleted: false });
   }
 
   // Lấy media theo loại
   static async findByLoaiMedia(loaiMedia) {
     return await Media.find({ LoaiMedia: loaiMedia, deleted: false })
-      .populate("NguoiTao", "TenNV Email")
       .sort({ createdAt: -1 });
   }
 
   // Cập nhật media
   static async update(id, data) {
-    // Không cho phép cập nhật MaMedia và NguoiTao
+    // Không cho phép cập nhật MaMedia
     delete data.MaMedia;
-    delete data.NguoiTao;
 
     return await Media.findOneAndUpdate({ _id: id, deleted: false }, data, {
       new: true,
       runValidators: true,
-    }).populate("NguoiTao", "TenNV Email");
+    });
   }
 
   // Xóa mềm media

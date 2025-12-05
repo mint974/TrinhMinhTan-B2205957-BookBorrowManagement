@@ -12,7 +12,7 @@ const MediaSchema = new mongoose.Schema(
     },
     TenMedia: { type: String, required: true },
     LoaiMedia: { type: String, required: true },
-    filePath: { type: String, required: true },
+    filePath: { type: String, default: "" },
     fileType: { type: String, required: true },
     fileSize: { type: Number },
     Sach: {
@@ -21,11 +21,6 @@ const MediaSchema = new mongoose.Schema(
       default: null,
     },
     MoTa: { type: String, default: "" },
-    NguoiTao: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "NhanVien",
-      required: true,
-    },
     deleted: { type: Boolean, default: false },
   },
 

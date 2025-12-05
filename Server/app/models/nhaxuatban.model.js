@@ -16,11 +16,6 @@ const NhaXuatBanSchema = new mongoose.Schema(
     DiaChiChiTiet: { type: String },
     SoDienThoai: { type: String },
     Email: { type: String },
-    NguoiTao: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "NhanVien",
-      required: true,
-    },
     deleted: { type: Boolean, default: false },
   },
   {

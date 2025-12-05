@@ -71,13 +71,6 @@
                 </router-link>
             </li>
 
-            <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/media" class="nav-link" active-class="active" :title="isCollapsed ? 'Media' : ''">
-                    <i class="fas fa-file-alt me-2"></i>
-                    <span v-show="!isCollapsed">Media</span>
-                </router-link>
-            </li>
-
             <li class="nav-divider"></li>
 
             <li class="nav-item">

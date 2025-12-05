@@ -1,14 +1,21 @@
 const router = require("express").Router();
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const controller = require("../controllers/nhanvien.controller");
 const auth = require("../middlewares/auth");
 const admin = require("../middlewares/admin");
 const authController = require("../controllers/auth.controller");
 
+// Tạo thư mục uploads/avatar nếu chưa tồn tại
+const uploadDir = "uploads/avatar";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "uploads/avatar/");
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);

@@ -77,14 +77,6 @@
                 </div>
             </template>
 
-            <!-- Người tạo column -->
-            <template #NguoiTao="{ value }">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="fas fa-user me-2"></i>
-                    <span class="small">{{ value?.HoTen || '(Không rõ)' }}</span>
-                </div>
-            </template>
-
             <!-- Ngày tạo column -->
             <template #createdAt="{ value }">
                 <div class="d-flex align-items-center text-muted">
@@ -202,13 +194,6 @@
                             </div>
                             <div class="detail-item">
                                 <label>
-                                    <i class="fas fa-user me-2 text-success"></i>
-                                    Người Tạo:
-                                </label>
-                                <span>{{ selectedCategory.NguoiTao?.HoTen || '(Không rõ)' }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <label>
                                     <i class="fas fa-calendar-plus me-2 text-warning"></i>
                                     Ngày Tạo:
                                 </label>
@@ -271,10 +256,9 @@ export default {
     computed: {
         tableColumns() {
             return [
-                { key: 'MaDanhMuc', label: 'Mã Danh Mục', width: '12%' },
-                { key: 'TenDanhMuc', label: 'Tên Danh Mục', width: '20%' },
-                { key: 'MoTa', label: 'Mô Tả', width: '28%' },
-                { key: 'NguoiTao', label: 'Người Tạo', width: '15%' },
+                { key: 'MaDanhMuc', label: 'Mã Danh Mục', width: '15%' },
+                { key: 'TenDanhMuc', label: 'Tên Danh Mục', width: '25%' },
+                { key: 'MoTa', label: 'Mô Tả', width: '35%' },
                 { key: 'createdAt', label: 'Ngày Tạo', width: '15%' },
                 { key: 'actions', label: 'Thao Tác', width: '10%' }
             ];

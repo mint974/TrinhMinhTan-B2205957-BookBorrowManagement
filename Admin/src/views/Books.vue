@@ -120,14 +120,6 @@
                 </div>
             </template>
 
-            <!-- Người tạo column -->
-            <template #NguoiTao="{ value }">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="fas fa-user me-2"></i>
-                    <span class="small">{{ value?.HoTen || '(Không rõ)' }}</span>
-                </div>
-            </template>
-
             <!-- Ngày tạo column -->
             <template #createdAt="{ value }">
                 <div class="d-flex align-items-center text-muted">
@@ -247,15 +239,6 @@
                                             Mô Tả:
                                         </label>
                                         <span>{{ selectedBook.MoTa || '(Chưa có mô tả)' }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="detail-item">
-                                        <label>
-                                            <i class="fas fa-user me-2 text-success"></i>
-                                            Người Tạo:
-                                        </label>
-                                        <span>{{ selectedBook.NguoiTao?.HoTen || '(Không rõ)' }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -506,13 +489,12 @@ export default {
             },
             columns: [
                 { key: 'AnhBia', label: 'Ảnh Bìa', width: '8%' },
-                { key: 'TenSach', label: 'Tên Sách', width: '18%' },
-                { key: 'TacGia', label: 'Tác Giả', width: '12%' },
-                { key: 'NhaXuatBan', label: 'Nhà Xuất Bản', width: '12%' },
-                { key: 'DanhMuc', label: 'Danh Mục', width: '10%' },
-                { key: 'SoQuyen', label: 'Số Quyển', width: '8%' },
-                { key: 'DonGia', label: 'Đơn Giá', width: '10%' },
-                { key: 'NguoiTao', label: 'Người Tạo', width: '10%' },
+                { key: 'TenSach', label: 'Tên Sách', width: '20%' },
+                { key: 'TacGia', label: 'Tác Giả', width: '13%' },
+                { key: 'NhaXuatBan', label: 'Nhà Xuất Bản', width: '13%' },
+                { key: 'DanhMuc', label: 'Danh Mục', width: '11%' },
+                { key: 'SoQuyen', label: 'Số Quyển', width: '9%' },
+                { key: 'DonGia', label: 'Đơn Giá', width: '11%' },
                 { key: 'createdAt', label: 'Ngày Tạo', width: '10%' },
                 { key: 'actions', label: 'Hành Động', width: '5%' },
             ],
