@@ -260,6 +260,61 @@
                       <option value="Khác">Khác</option>
                     </select>
                   </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">
+                      <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                      Tỉnh/Thành phố
+                    </label>
+                    <select class="form-select" v-model="form.MaTinh">
+                      <option value="">Chọn tỉnh/thành phố</option>
+                      <!-- Tạm thời hard-code, sẽ tích hợp API sau -->
+                      <option value="79">TP. Hồ Chí Minh</option>
+                      <option value="01">Hà Nội</option>
+                      <option value="48">Đà Nẵng</option>
+                      <option value="31">Hải Phòng</option>
+                      <option value="92">Cần Thơ</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">
+                      <i class="fas fa-map-marker-alt me-1 text-warning"></i>
+                      Quận/Huyện
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      v-model="form.MaQuan"
+                      placeholder="Nhập quận/huyện..."
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">
+                      <i class="fas fa-map-marker-alt me-1 text-info"></i>
+                      Phường/Xã
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      v-model="form.MaPhuong"
+                      placeholder="Nhập phường/xã..."
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">
+                      <i class="fas fa-home me-1 text-success"></i>
+                      Địa chỉ chi tiết
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      v-model="form.DiaChiChiTiet"
+                      placeholder="Số nhà, tên đường..."
+                    />
+                  </div>
                 </div>
 
                 <div class="col-md-4">
@@ -395,6 +450,15 @@
                       {{ selectedAuthor.TrangThai }}
                     </span>
                   </div>
+                  <div class="detail-item" v-if="selectedAuthor.DiaChiChiTiet || selectedAuthor.MaTinh">
+                    <label>
+                      <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                      Địa chỉ:
+                    </label>
+                    <span>
+                      {{ [selectedAuthor.DiaChiChiTiet, selectedAuthor.MaPhuong, selectedAuthor.MaQuan, selectedAuthor.MaTinh].filter(Boolean).join(', ') || 'Không rõ' }}
+                    </span>
+                  </div>
                   <div class="detail-item" v-if="selectedAuthor.TieuSu">
                     <label>
                       <i class="fas fa-align-left me-2 text-warning"></i>
@@ -470,6 +534,10 @@ export default {
         NamSinh: null,
         NamMat: null,
         QuocTich: '',
+        MaTinh: '',
+        MaQuan: '',
+        MaPhuong: '',
+        DiaChiChiTiet: '',
         TieuSu: '',
         HinhAnh: null
       },
@@ -598,6 +666,10 @@ export default {
         NamSinh: author.NamSinh,
         NamMat: author.NamMat,
         QuocTich: author.QuocTich || '',
+        MaTinh: author.MaTinh || '',
+        MaQuan: author.MaQuan || '',
+        MaPhuong: author.MaPhuong || '',
+        DiaChiChiTiet: author.DiaChiChiTiet || '',
         TieuSu: author.TieuSu || '',
         HinhAnh: author.HinhAnh
       };
@@ -674,6 +746,10 @@ export default {
         NamSinh: null,
         NamMat: null,
         QuocTich: '',
+        MaTinh: '',
+        MaQuan: '',
+        MaPhuong: '',
+        DiaChiChiTiet: '',
         TieuSu: '',
         HinhAnh: null
       };
