@@ -6,11 +6,13 @@ class BorrowService {
   }
 
   async getAllByReader(readerId) {
-    return (await this.api.get(`/reader/${readerId}`)).data;
+    const response = await this.api.get(`/reader/${readerId}`);
+    return response.data.data || response.data;
   }
 
   async create(data) {
-    return (await this.api.post("/", data)).data;
+    const response = await this.api.post("/", data);
+    return response.data.data || response.data;
   }
 }
 

@@ -33,7 +33,7 @@
           </h5>
           <div v-if="newBooks.length > 0" class="row g-4">
             <div v-for="book in newBooks.slice(0, 6)" :key="book._id" class="col-md-4 col-lg-2">
-              <BookCard v-bind="book" />
+              <BookCard v-bind="book" @click="navigateToBook(book._id)" />
             </div>
           </div>
           <div v-else class="alert alert-info">
@@ -118,15 +118,21 @@ export default {
         this.loading = true;
         
         // Load sách
-        console.log('Đang load sách...');
         const booksResponse = await BookService.getAll();
-        console.log('Books response:', booksResponse);
-        this.newBooks = booksResponse.data || [];
-        console.log('New books:', this.newBooks);
+        const allBooks = booksResponse || [];
+
+        // Map dữ liệu sách để hiển thị với BookCard
+        this.newBooks = allBooks.map(book => ({
+          _id: book._id,
+          image: book.AnhBia ? `http://localhost:5000/${book.AnhBia}` : 'https://via.placeholder.com/150x200?text=No+Image',
+          title: book.TenSach,
+          author: book.TacGia?.HoTen || 'Chưa rõ',
+          category: book.DanhMuc?.TenDanhMuc || 'Chưa phân loại'
+        }));
 
         // Trích xuất danh mục từ sách
         const categoriesSet = new Set();
-        this.newBooks.forEach(book => {
+        allBooks.forEach(book => {
           if (book.DanhMuc && book.DanhMuc.TenDanhMuc) {
             categoriesSet.add(JSON.stringify({
               _id: book.DanhMuc._id,
@@ -135,28 +141,36 @@ export default {
           }
         });
         this.categories = Array.from(categoriesSet).map(item => JSON.parse(item));
-        console.log('Categories:', this.categories);
 
-        // Trích xuất tác giả từ sách
-        const authorsSet = new Set();
-        this.newBooks.forEach(book => {
+        // Trích xuất tác giả từ sách và đếm số sách của mỗi tác giả
+        const authorsMap = new Map();
+        allBooks.forEach(book => {
           if (book.TacGia && book.TacGia.HoTen) {
-            authorsSet.add(JSON.stringify({
-              _id: book.TacGia._id,
-              name: book.TacGia.HoTen,
-              image: book.TacGia.HinhAnh || '',
-            }));
+            const tacGiaId = book.TacGia._id;
+            if (authorsMap.has(tacGiaId)) {
+              const author = authorsMap.get(tacGiaId);
+              author.books += 1;
+            } else {
+              authorsMap.set(tacGiaId, {
+                _id: book.TacGia._id,
+                name: book.TacGia.HoTen,
+                image: book.TacGia.HinhAnh || '',
+                books: 1
+              });
+            }
           }
         });
-        this.authors = Array.from(authorsSet).map(item => JSON.parse(item));
-        console.log('Authors:', this.authors);
+        this.authors = Array.from(authorsMap.values());
 
       } catch (error) {
         console.error('Lỗi khi load dữ liệu:', error);
-        console.error('Error response:', error.response);
       } finally {
         this.loading = false;
       }
+    },
+
+    navigateToBook(bookId) {
+      this.$router.push(`/sach/${bookId}`);
     }
   }
 };

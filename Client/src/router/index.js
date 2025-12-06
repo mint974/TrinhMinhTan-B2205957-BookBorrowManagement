@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
-import BookList from "@/views/BookList.vue";
+import BookList from "@/views/sach/BookList.vue";
+import BookDetail from "@/views/sach/BookDetail.vue";
 import BorrowHistory from "@/views/BorrowHistory.vue";
 import Login from "@/views/auth/Login.vue";
 import Register from "@/views/auth/Register.vue";
@@ -17,6 +18,12 @@ const routes = [
     path: "/books", 
     name: "books", 
     component: BookList,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: "/sach/:id", 
+    name: "book-detail", 
+    component: BookDetail,
     meta: { requiresAuth: true }
   },
   { 

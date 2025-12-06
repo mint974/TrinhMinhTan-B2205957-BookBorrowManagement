@@ -6,11 +6,13 @@ class BookService {
   }
 
   async getAll() {
-    return (await this.api.get("/")).data;
+    const response = await this.api.get("/");
+    return response.data.data || response.data;
   }
 
   async get(id) {
-    return (await this.api.get(`/${id}`)).data;
+    const response = await this.api.get(`/${id}`);
+    return response.data.data || response.data;
   }
 
   async search(keyword) {
