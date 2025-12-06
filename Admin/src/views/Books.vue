@@ -12,11 +12,19 @@
         <!-- Search & Filters -->
         <SearchFilter 
             v-model="searchQuery"
-            placeholder="Tìm kiếm theo tên sách, tác giả, mã sách..."
+            placeholder="Tìm kiếm theo tên sách, mã sách..."
             @search="filterBooks"
             @reset="resetSearch"
         >
             <template #filters>
+                <div class="col-md-2">
+                    <select class="form-select" v-model="filterTacGia" @change="filterBooks">
+                        <option value="">Tất cả tác giả</option>
+                        <option v-for="tg in authors" :key="tg._id" :value="tg._id">
+                            {{ tg.HoTen }}
+                        </option>
+                    </select>
+                </div>
                 <div class="col-md-2">
                     <select class="form-select" v-model="filterNhaXuatBan" @change="filterBooks">
                         <option value="">Tất cả NXB</option>
@@ -87,7 +95,12 @@
             <template #TacGia="{ value }">
                 <div class="d-flex align-items-center text-muted">
                     <i class="fas fa-pen-fancy me-2"></i>
-                    <span class="small">{{ value }}</span>
+                    <div>
+                        <span class="small">{{ value?.HoTen || '(Chưa có)' }}</span>
+                        <div v-if="value?.ButDanh" class="text-muted" style="font-size: 0.75rem;">
+                            <i class="fas fa-signature me-1"></i>{{ value.ButDanh }}
+                        </div>
+                    </div>
                 </div>
             </template>
 
@@ -184,7 +197,12 @@
                                             <i class="fas fa-pen-fancy me-2 text-info"></i>
                                             Tác Giả:
                                         </label>
-                                        <span>{{ selectedBook.TacGia }}</span>
+                                        <span>
+                                            {{ selectedBook.TacGia?.HoTen || '(Chưa có)' }}
+                                            <span v-if="selectedBook.TacGia?.ButDanh" class="text-muted">
+                                                ({{ selectedBook.TacGia.ButDanh }})
+                                            </span>
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -296,13 +314,16 @@
                                         <i class="fas fa-pen-fancy text-info me-2"></i>
                                         Tác Giả <span class="text-danger">*</span>
                                     </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
+                                    <select 
+                                        class="form-select" 
                                         v-model="formData.TacGia"
-                                        placeholder="Nhập tên tác giả..."
                                         required
-                                    />
+                                    >
+                                        <option value="">-- Chọn tác giả --</option>
+                                        <option v-for="tg in authors" :key="tg._id" :value="tg._id">
+                                            {{ tg.HoTen }}<span v-if="tg.ButDanh"> ({{ tg.ButDanh }})</span>
+                                        </option>
+                                    </select>
                                 </div>
 
                                 <div class="col-md-6">
@@ -439,9 +460,10 @@
 <script>
 import { Modal } from 'bootstrap';
 import { useToast } from 'vue-toastification';
-import SachService from '@/services/sach.service';
-import NhaXuatBanService from '@/services/nhaxuatban.service';
-import DanhMucService from '@/services/danhmuc.service';
+import SachService from '../services/sach.service';
+import NhaXuatBanService from '../services/nhaxuatban.service';
+import DanhMucService from '../services/danhmuc.service';
+import TacGiaService from '../services/tacgia.service';
 import PageHeader from '@/components/PageHeader.vue';
 import SearchFilter from '@/components/SearchFilter.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -466,8 +488,10 @@ export default {
             filteredBooks: [],
             publishers: [],
             categories: [],
+            authors: [],
             selectedBook: null,
             searchQuery: '',
+            filterTacGia: '',
             filterNhaXuatBan: '',
             filterDanhMuc: '',
             filterGia: '',
@@ -507,6 +531,7 @@ export default {
         this.loadBooks();
         this.loadPublishers();
         this.loadCategories();
+        this.loadAuthors();
     },
 
     watch: {
@@ -546,6 +571,14 @@ export default {
             }
         },
 
+        async loadAuthors() {
+            try {
+                this.authors = await TacGiaService.getAllForSelect();
+            } catch (error) {
+                console.error('Error loading authors:', error);
+            }
+        },
+
         filterBooks() {
             let filtered = [...this.books];
 
@@ -554,15 +587,22 @@ export default {
                 const query = this.searchQuery.toLowerCase().trim();
                 filtered = filtered.filter(b => {
                     const tenSach = (b.TenSach || '').toLowerCase();
-                    const tacGia = (b.TacGia || '').toLowerCase();
                     const maSach = (b.MaSach || '').toLowerCase();
                     const tenNXB = (b.NhaXuatBan?.TenNXB || '').toLowerCase();
+                    const tenTacGia = (b.TacGia?.HoTen || '').toLowerCase();
+                    const butDanh = (b.TacGia?.ButDanh || '').toLowerCase();
                     
                     return tenSach.includes(query) ||
-                           tacGia.includes(query) ||
                            maSach.includes(query) ||
-                           tenNXB.includes(query);
+                           tenNXB.includes(query) ||
+                           tenTacGia.includes(query) ||
+                           butDanh.includes(query);
                 });
+            }
+
+            // Lọc theo tác giả
+            if (this.filterTacGia) {
+                filtered = filtered.filter(b => b.TacGia?._id === this.filterTacGia);
             }
 
             // Lọc theo nhà xuất bản
@@ -599,6 +639,7 @@ export default {
 
         resetSearch() {
             this.searchQuery = '';
+            this.filterTacGia = '';
             this.filterNhaXuatBan = '';
             this.filterDanhMuc = '';
             this.filterGia = '';
@@ -629,7 +670,7 @@ export default {
             this.previewImage = null;
             this.formData = {
                 TenSach: book.TenSach,
-                TacGia: book.TacGia,
+                TacGia: book.TacGia?._id || '',
                 NhaXuatBan: book.NhaXuatBan?._id || '',
                 DanhMuc: book.DanhMuc?._id || '',
                 NamXuatBan: book.NamXuatBan,

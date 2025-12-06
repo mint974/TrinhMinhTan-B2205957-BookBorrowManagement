@@ -21,7 +21,11 @@ const SachSchema = new mongoose.Schema(
       required: true,
     },
     NamXuatBan: { type: Number, required: true },
-    TacGia: { type: String, required: true },
+    TacGia: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "TacGia",
+      required: true,
+    },
     SoQuyen: { type: Number, required: true, min: 0 },
     DonGia: { type: Number, required: true, min: 0 },
     MoTa: { type: String, default: "" },

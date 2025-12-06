@@ -7,6 +7,7 @@ class SachService {
     return await Sach.findById(newSach._id)
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
+      .populate('TacGia', 'HoTen ButDanh')
       .populate('NguoiTao', 'HoTen Email')
       .populate({
         path: 'medias',
@@ -19,6 +20,7 @@ class SachService {
     return await Sach.find({ deleted: false })
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
+      .populate('TacGia', 'HoTen ButDanh')
       .populate('NguoiTao', 'HoTen Email')
       .populate({
         path: 'medias',
@@ -32,6 +34,7 @@ class SachService {
     return await Sach.findOne({ _id: id, deleted: false })
       .populate('NhaXuatBan', 'TenNXB MaNXB DiaChi')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc MoTa')
+      .populate('TacGia', 'HoTen ButDanh QuocTich NamSinh')
       .populate('NguoiTao', 'HoTen Email')
       .populate({
         path: 'medias',
@@ -46,6 +49,7 @@ class SachService {
     })
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
+      .populate('TacGia', 'HoTen ButDanh')
       .populate('NguoiTao', 'HoTen Email')
       .populate({
         path: 'medias',
@@ -69,12 +73,12 @@ class SachService {
       deleted: false,
       $or: [
         { TenSach: searchRegex },
-        { TacGia: searchRegex },
         { MaSach: searchRegex }
       ]
     })
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
+      .populate('TacGia', 'HoTen ButDanh')
       .populate('NguoiTao', 'HoTen Email')
       .populate('medias')
       .sort({ createdAt: -1 });

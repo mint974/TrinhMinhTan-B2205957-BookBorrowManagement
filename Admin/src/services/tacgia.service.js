@@ -47,6 +47,11 @@ class TacGiaService {
     const response = await this.api.get(`/quoctich/${quocTich}`);
     return response.data.data;
   }
+
+  async getAllForSelect() {
+    const response = await this.api.get("/select");
+    return response.data.data;
+  }
 }
 
 export default new TacGiaService();
