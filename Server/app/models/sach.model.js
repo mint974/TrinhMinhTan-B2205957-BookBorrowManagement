@@ -29,6 +29,7 @@ const SachSchema = new mongoose.Schema(
     SoQuyen: { type: Number, required: true, min: 0 },
     DonGia: { type: Number, required: true, min: 0 },
     MoTa: { type: String, default: "" },
+    AnhBia: { type: String, default: "" },
     NguoiTao: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "NhanVien",
@@ -38,18 +39,8 @@ const SachSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
   }
 );
-
-// Virtual field để lấy danh sách media
-SachSchema.virtual('medias', {
-  ref: 'Media',
-  localField: '_id',
-  foreignField: 'Sach',
-  match: { deleted: false }
-});
 
 const Sach = mongoose.model("Sach", SachSchema);
 module.exports = Sach;

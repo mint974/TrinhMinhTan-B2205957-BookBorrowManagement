@@ -7,12 +7,8 @@ class SachService {
     return await Sach.findById(newSach._id)
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
-      .populate('TacGia', 'HoTen ButDanh')
-      .populate('NguoiTao', 'HoTen Email')
-      .populate({
-        path: 'medias',
-        match: { deleted: false }
-      });
+      .populate('TacGia', 'HoTen ButDanh HinhAnh')
+      .populate('NguoiTao', 'HoTen Email');
   }
 
   // Lấy danh sách sách (không lấy bản đã xóa)
@@ -20,12 +16,8 @@ class SachService {
     return await Sach.find({ deleted: false })
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
-      .populate('TacGia', 'HoTen ButDanh')
+      .populate('TacGia', 'HoTen ButDanh HinhAnh')
       .populate('NguoiTao', 'HoTen Email')
-      .populate({
-        path: 'medias',
-        match: { deleted: false }
-      })
       .sort({ createdAt: -1 });
   }
 
@@ -34,12 +26,8 @@ class SachService {
     return await Sach.findOne({ _id: id, deleted: false })
       .populate('NhaXuatBan', 'TenNXB MaNXB DiaChi')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc MoTa')
-      .populate('TacGia', 'HoTen ButDanh QuocTich NamSinh')
-      .populate('NguoiTao', 'HoTen Email')
-      .populate({
-        path: 'medias',
-        match: { deleted: false }
-      });
+      .populate('TacGia', 'HoTen ButDanh QuocTich NamSinh HinhAnh')
+      .populate('NguoiTao', 'HoTen Email');
   }
 
   // Cập nhật sách
@@ -49,12 +37,8 @@ class SachService {
     })
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
-      .populate('TacGia', 'HoTen ButDanh')
-      .populate('NguoiTao', 'HoTen Email')
-      .populate({
-        path: 'medias',
-        match: { deleted: false }
-      });
+      .populate('TacGia', 'HoTen ButDanh HinhAnh')
+      .populate('NguoiTao', 'HoTen Email');
   }
 
   // Xóa mềm sách
@@ -78,9 +62,8 @@ class SachService {
     })
       .populate('NhaXuatBan', 'TenNXB MaNXB')
       .populate('DanhMuc', 'TenDanhMuc MaDanhMuc')
-      .populate('TacGia', 'HoTen ButDanh')
+      .populate('TacGia', 'HoTen ButDanh HinhAnh')
       .populate('NguoiTao', 'HoTen Email')
-      .populate('medias')
       .sort({ createdAt: -1 });
   }
 }

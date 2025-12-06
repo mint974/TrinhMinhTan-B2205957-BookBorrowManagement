@@ -6,7 +6,7 @@ const path = require("path");
 // Tạo tác giả mới
 exports.create = async (req, res, next) => {
   try {
-    const { HoTen, ButDanh, NamSinh, NamMat, QuocTich, TieuSu } = req.body;
+    const { HoTen, ButDanh, NamSinh, NamMat, QuocTich, MaTinh, MaQuan, MaPhuong, DiaChiChiTiet, TieuSu } = req.body;
 
     if (!HoTen) {
       // Xóa file nếu đã upload và thiếu thông tin
@@ -18,11 +18,14 @@ exports.create = async (req, res, next) => {
 
     const tacgiaData = {
       HoTen,
-      NguoiTao: req.user.id, // Lấy từ auth middleware
       ButDanh: ButDanh || "",
       NamSinh: NamSinh ? parseInt(NamSinh) : undefined,
       NamMat: NamMat ? parseInt(NamMat) : undefined,
       QuocTich: QuocTich || "",
+      MaTinh: MaTinh || "",
+      MaQuan: MaQuan || "",
+      MaPhuong: MaPhuong || "",
+      DiaChiChiTiet: DiaChiChiTiet || "",
       TieuSu: TieuSu || "",
       HinhAnh: req.file ? req.file.path : undefined,
     };
@@ -104,7 +107,7 @@ exports.getByQuocTich = async (req, res, next) => {
 // Cập nhật tác giả
 exports.update = async (req, res, next) => {
   try {
-    const { HoTen, ButDanh, NamSinh, NamMat, QuocTich, TieuSu } = req.body;
+    const { HoTen, ButDanh, NamSinh, NamMat, QuocTich, MaTinh, MaQuan, MaPhuong, DiaChiChiTiet, TieuSu } = req.body;
     const updateData = {};
 
     if (HoTen) updateData.HoTen = HoTen;
@@ -113,6 +116,10 @@ exports.update = async (req, res, next) => {
     if (NamMat !== undefined)
       updateData.NamMat = NamMat ? parseInt(NamMat) : null;
     if (QuocTich !== undefined) updateData.QuocTich = QuocTich;
+    if (MaTinh !== undefined) updateData.MaTinh = MaTinh;
+    if (MaQuan !== undefined) updateData.MaQuan = MaQuan;
+    if (MaPhuong !== undefined) updateData.MaPhuong = MaPhuong;
+    if (DiaChiChiTiet !== undefined) updateData.DiaChiChiTiet = DiaChiChiTiet;
     if (TieuSu !== undefined) updateData.TieuSu = TieuSu;
 
     // Xử lý upload hình ảnh nếu có

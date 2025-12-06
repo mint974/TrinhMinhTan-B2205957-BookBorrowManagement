@@ -68,8 +68,8 @@
             <template #AnhBia="{ item }">
                 <div class="book-cover">
                     <img 
-                        v-if="item.medias && item.medias.length > 0"
-                        :src="`http://localhost:5000/${item.medias[0].filePath}`" 
+                        v-if="item.AnhBia"
+                        :src="`http://localhost:5000/${item.AnhBia}`" 
                         :alt="item.TenSach"
                         class="img-thumbnail"
                         style="width: 60px; height: 80px; object-fit: cover;"
@@ -157,7 +157,7 @@
                         <div class="book-details">
                             <div class="row g-3">
                                 <!-- Ảnh bìa -->
-                                <div class="col-12" v-if="selectedBook.medias && selectedBook.medias.length > 0">
+                                <div class="col-12" v-if="selectedBook.AnhBia">
                                     <div class="detail-item text-center">
                                         <label>
                                             <i class="fas fa-image me-2 text-primary"></i>
@@ -165,7 +165,7 @@
                                         </label>
                                         <div class="mt-2">
                                             <img 
-                                                :src="`http://localhost:5000/${selectedBook.medias[0].filePath}`" 
+                                                :src="`http://localhost:5000/${selectedBook.AnhBia}`" 
                                                 :alt="selectedBook.TenSach"
                                                 style="max-width: 300px; max-height: 400px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
                                             />
@@ -424,18 +424,40 @@
                                         <i class="fas fa-image text-primary me-2"></i>
                                         Ảnh Bìa Sách
                                     </label>
-                                    <input 
-                                        type="file" 
-                                        class="form-control" 
-                                        @change="onFileChange"
-                                        accept="image/*"
-                                    />
-                                    <div v-if="previewImage" class="mt-3">
-                                        <img :src="previewImage" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;" />
-                                    </div>
-                                    <div v-else-if="isEditMode && selectedBook?.medias?.length > 0" class="mt-3">
-                                        <img :src="`http://localhost:5000/${selectedBook.medias[0].filePath}`" alt="Current" style="max-width: 200px; max-height: 200px; border-radius: 8px;" />
-                                        <p class="text-muted small mt-2">Ảnh hiện tại</p>
+                                    <div class="book-image-upload">
+                                        <div class="image-preview" v-if="imagePreview || (isEditMode && selectedBook?.AnhBia)">
+                                            <img 
+                                                :src="imagePreview || `http://localhost:5000/${selectedBook.AnhBia}`" 
+                                                alt="Preview" 
+                                                class="preview-img"
+                                            />
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-sm btn-danger remove-image"
+                                                @click="removeImage"
+                                            >
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div v-else class="image-placeholder" @click="triggerFileUpload">
+                                            <i class="fas fa-camera"></i>
+                                            <p>Chọn ảnh bìa</p>
+                                        </div>
+                                        <input 
+                                            type="file" 
+                                            ref="imageInput"
+                                            @change="handleImageChange"
+                                            accept="image/*"
+                                            style="display: none"
+                                        />
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm btn-primary mt-2 w-100"
+                                            @click="triggerFileUpload"
+                                        >
+                                            <i class="fas fa-upload me-1"></i>
+                                            Chọn ảnh
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -499,8 +521,7 @@ export default {
             isEditMode: false,
             bookModal: null,
             viewModal: null,
-            selectedFile: null,
-            previewImage: null,
+            imagePreview: null,
             formData: {
                 TenSach: '',
                 TacGia: '',
@@ -648,8 +669,10 @@ export default {
 
         openAddModal() {
             this.isEditMode = false;
-            this.selectedFile = null;
-            this.previewImage = null;
+            this.imagePreview = null;
+            if (this.$refs.imageInput) {
+                this.$refs.imageInput.value = '';
+            }
             this.formData = {
                 TenSach: '',
                 TacGia: '',
@@ -666,8 +689,7 @@ export default {
         editBook(book) {
             this.isEditMode = true;
             this.selectedBook = book;
-            this.selectedFile = null;
-            this.previewImage = null;
+            this.imagePreview = null;
             this.formData = {
                 TenSach: book.TenSach,
                 TacGia: book.TacGia?._id || '',
@@ -681,15 +703,35 @@ export default {
             this.bookModal.show();
         },
 
-        onFileChange(event) {
+        handleImageChange(event) {
             const file = event.target.files[0];
-            if (file) {
-                this.selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.previewImage = e.target.result;
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+
+            if (!file.type.match('image.*')) {
+                this.toast.warning('Vui lòng chọn file hình ảnh!');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                this.toast.warning('File ảnh không được vượt quá 5MB!');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imagePreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        
+        triggerFileUpload() {
+            this.$refs.imageInput.click();
+        },
+        
+        removeImage() {
+            this.imagePreview = null;
+            if (this.$refs.imageInput) {
+                this.$refs.imageInput.value = '';
             }
         },
 
@@ -700,19 +742,29 @@ export default {
 
         async saveBook() {
             try {
-                let savedBook;
+                const formData = new FormData();
+                
+                // Thêm các field vào formData
+                formData.append('TenSach', this.formData.TenSach);
+                formData.append('TacGia', this.formData.TacGia);
+                formData.append('NhaXuatBan', this.formData.NhaXuatBan);
+                formData.append('DanhMuc', this.formData.DanhMuc);
+                formData.append('NamXuatBan', this.formData.NamXuatBan);
+                formData.append('SoQuyen', this.formData.SoQuyen);
+                formData.append('DonGia', this.formData.DonGia);
+                formData.append('MoTa', this.formData.MoTa || '');
+
+                // Thêm file ảnh nếu có
+                if (this.$refs.imageInput && this.$refs.imageInput.files[0]) {
+                    formData.append('AnhBia', this.$refs.imageInput.files[0]);
+                }
                 
                 if (this.isEditMode) {
-                    savedBook = await SachService.update(this.selectedBook._id, this.formData);
+                    await SachService.update(this.selectedBook._id, formData);
                     this.toast.success('Cập nhật sách thành công!');
                 } else {
-                    savedBook = await SachService.create(this.formData);
+                    await SachService.create(formData);
                     this.toast.success('Thêm sách thành công!');
-                }
-
-                // Upload ảnh bìa nếu có
-                if (this.selectedFile && savedBook) {
-                    await this.uploadBookCover(savedBook._id);
                 }
 
                 this.bookModal.hide();
@@ -720,33 +772,6 @@ export default {
             } catch (error) {
                 console.error('Error saving book:', error);
                 this.toast.error(error.response?.data?.message || 'Lỗi khi lưu sách');
-            }
-        },
-
-        async uploadBookCover(sachId) {
-            try {
-                const formData = new FormData();
-                formData.append('file', this.selectedFile);
-                formData.append('TenMedia', `Ảnh bìa - ${this.formData.TenSach}`);
-                formData.append('LoaiMedia', 'Ảnh bìa sách');
-                formData.append('Sach', sachId);
-
-                const response = await fetch('http://localhost:5000/api/media/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Upload ảnh thất bại');
-                }
-
-                this.toast.success('Upload ảnh bìa thành công!');
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                this.toast.error('Lỗi khi upload ảnh bìa');
             }
         },
 
@@ -861,5 +886,70 @@ export default {
     background: #f8f9fa;
     border: 2px dashed #dee2e6;
     border-radius: 6px;
+}
+
+/* Book Image Upload Styles */
+.book-image-upload {
+    margin-top: 10px;
+}
+
+.image-preview {
+    position: relative;
+    width: 100%;
+    max-width: 250px;
+    margin-bottom: 10px;
+}
+
+.preview-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-placeholder {
+    width: 100%;
+    max-width: 250px;
+    height: 300px;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.image-placeholder:hover {
+    border-color: #667eea;
+    background: #f0f2ff;
+}
+
+.image-placeholder i {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 10px;
+}
+
+.image-placeholder p {
+    color: #6c757d;
+    margin: 0;
+    font-weight: 500;
 }
 </style>

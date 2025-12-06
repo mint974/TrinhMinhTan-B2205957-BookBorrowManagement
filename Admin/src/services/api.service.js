@@ -19,6 +19,12 @@ export default (baseURL) => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+      
+      // Nếu data là FormData, xóa Content-Type để browser tự set với boundary
+      if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+      }
+      
       return config;
     },
     (error) => {
