@@ -28,7 +28,6 @@ class TacGiaService {
     const skip = (page - 1) * limit;
     const total = await TacGia.countDocuments(filter);
     const data = await TacGia.find(filter)
-      .populate("NguoiTao", "TenNV Email")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -46,16 +45,12 @@ class TacGiaService {
 
   // Lấy tác giả theo ID
   static async findById(id) {
-    return await TacGia.findOne({ _id: id, deleted: false }).populate(
-      "NguoiTao",
-      "TenNV Email"
-    );
+    return await TacGia.findOne({ _id: id, deleted: false });
   }
 
   // Lấy tác giả theo quốc tịch
   static async findByQuocTich(quocTich) {
     return await TacGia.find({ QuocTich: quocTich, deleted: false })
-      .populate("NguoiTao", "TenNV Email")
       .sort({
         HoTen: 1,
       });
@@ -63,13 +58,10 @@ class TacGiaService {
 
   // Cập nhật tác giả
   static async update(id, data) {
-    // Không cho phép cập nhật NguoiTao
-    delete data.NguoiTao;
-
     return await TacGia.findOneAndUpdate({ _id: id, deleted: false }, data, {
       new: true,
       runValidators: true,
-    }).populate("NguoiTao", "TenNV Email");
+    });
   }
 
   // Xóa mềm tác giả

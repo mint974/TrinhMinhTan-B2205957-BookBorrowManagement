@@ -35,6 +35,13 @@
             </li>
 
             <li class="nav-item">
+                <router-link to="/bookborrow/manager/admin/authors" class="nav-link" active-class="active" :title="isCollapsed ? 'Tác Giả' : ''">
+                    <i class="fas fa-user-edit me-2"></i>
+                    <span v-show="!isCollapsed">Tác Giả</span>
+                </router-link>
+            </li>
+
+            <li class="nav-item">
                 <router-link to="/bookborrow/manager/admin/readers" class="nav-link" active-class="active" :title="isCollapsed ? 'Độc Giả' : ''">
                     <i class="fas fa-users me-2"></i>
                     <span v-show="!isCollapsed">Độc Giả</span>
@@ -56,13 +63,6 @@
             </li>
 
             <li class="nav-divider"></li>
-
-            <li class="nav-item">
-                <router-link to="/bookborrow/manager/admin/authors" class="nav-link" active-class="active" :title="isCollapsed ? 'Tác Giả' : ''">
-                    <i class="fas fa-user-edit me-2"></i>
-                    <span v-show="!isCollapsed">Tác Giả</span>
-                </router-link>
-            </li>
 
             <li class="nav-item">
                 <router-link to="/bookborrow/manager/admin/categories" class="nav-link" active-class="active" :title="isCollapsed ? 'Danh Mục' : ''">

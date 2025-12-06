@@ -48,6 +48,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/bookborrow/manager/admin/authors",
+    name: "admin.authors",
+    component: () => import("../views/TacGia.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/bookborrow/manager/admin/books",
     name: "admin.books",
     component: () => import("../views/Books.vue"),

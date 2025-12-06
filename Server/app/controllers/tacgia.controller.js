@@ -114,7 +114,21 @@ exports.update = async (req, res, next) => {
       updateData.NamMat = NamMat ? parseInt(NamMat) : null;
     if (QuocTich !== undefined) updateData.QuocTich = QuocTich;
     if (TieuSu !== undefined) updateData.TieuSu = TieuSu;
-    // Không cho phép cập nhật NguoiTao
+
+    // Xử lý upload hình ảnh nếu có
+    if (req.file) {
+      updateData.HinhAnh = `uploads/tacgia/${req.file.filename}`;
+      
+      // Xóa hình ảnh cũ nếu có
+      const existingAuthor = await TacGiaService.findById(req.params.id);
+      if (existingAuthor && existingAuthor.HinhAnh) {
+        const oldImagePath = existingAuthor.HinhAnh;
+        const fs = require('fs');
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+    }
 
     const updated = await TacGiaService.update(req.params.id, updateData);
     if (!updated) {

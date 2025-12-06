@@ -55,7 +55,7 @@ router.get("/", auth, controller.getAll); // Danh sách (có filter & search)
 router.get("/:id", auth, controller.getById); // Chi tiết
 
 router.post("/", auth, upload.single("HinhAnh"), controller.create); // Tạo tác giả mới
-router.put("/:id", auth, controller.update); // Cập nhật thông tin
+router.put("/:id", auth, upload.single("HinhAnh"), controller.update); // Cập nhật thông tin
 router.put(
   "/:id/image",
   auth,
