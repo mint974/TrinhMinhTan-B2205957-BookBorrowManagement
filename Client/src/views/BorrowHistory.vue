@@ -9,6 +9,14 @@
           <i class="fas fa-history me-2"></i>
           Lịch sử mượn sách
         </h2>
+        <button 
+          class="btn btn-outline-primary"
+          @click="loadBorrowHistory"
+          :disabled="loading"
+        >
+          <i class="fas fa-sync-alt me-2" :class="{ 'fa-spin': loading }"></i>
+          Làm mới
+        </button>
       </div>
 
       <!-- Ban Alert if exists -->
@@ -137,6 +145,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import SidebarMenu from '@/components/SidebarMenu.vue';
 import TheoDoiMuonSachService from '@/services/theodoimuonsach.service';
+import { useToast } from 'vue-toastification';
 
 export default {
   name: 'BorrowHistory',
@@ -145,6 +154,7 @@ export default {
   },
   setup() {
     const router = useRouter();
+    const toast = useToast();
     const loading = ref(true);
     const borrows = ref([]);
     const banInfo = ref(null);
@@ -304,5 +314,25 @@ export default {
   font-size: 0.85rem;
   padding: 0.4rem 0.8rem;
   font-weight: 500;
+}
+
+.payment-amount {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
 }
 </style>

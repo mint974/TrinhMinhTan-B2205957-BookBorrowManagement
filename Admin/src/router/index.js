@@ -62,7 +62,7 @@ const routes = [
   {
     path: "/bookborrow/manager/admin/readers",
     name: "admin.readers",
-    component: () => import("../views/Readers.vue"),
+    component: () => import("../views/DocGia.vue"),
     meta: { requiresAuth: true },
   },
   {

@@ -2,7 +2,7 @@
   <div class="sidebar shadow-sm rounded-end-4 p-4">
     <div class="text-center mb-4">
       <div class="avatar-wrapper mb-3">
-        <img v-if="user && user.Avatar" :src="`http://localhost:5000/${user.Avatar}`" class="avatar" alt="Avatar" />
+        <img v-if="user && user.Avatar" :src="getAvatarUrl(user.Avatar)" class="avatar" alt="Avatar" />
         <div v-else class="avatar bg-white d-flex align-items-center justify-content-center">
           <i class="fas fa-user fa-2x text-muted"></i>
         </div>
@@ -45,6 +45,7 @@ export default {
         { icon: "fas fa-home", label: "Trang chủ", route: "/" },
         { icon: "fas fa-book", label: "Danh sách sách", route: "/books" },
         { icon: "fas fa-history", label: "Lịch sử mượn", route: "/history" },
+        { icon: "fas fa-user", label: "Trang cá nhân", route: "/profile" },
         { icon: "fas fa-sign-out-alt", label: "Đăng xuất", action: "logout" }
       ]
     };
@@ -63,15 +64,33 @@ export default {
   },
 
   mounted() {
-    this.user = AuthService.getCurrentUser();
+    this.loadUser();
+    // Listen for user updates
+    window.addEventListener('user-updated', this.loadUser);
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('user-updated', this.loadUser);
   },
 
   methods: {
+    loadUser() {
+      this.user = AuthService.getCurrentUser();
+    },
+
+    getAvatarUrl(avatar) {
+      if (!avatar) return '';
+      // Remove leading slash if exists
+      const cleanPath = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+      return `http://localhost:5000/${cleanPath}`;
+    },
+
     handleMenuClick(item) {
       if (item.action === 'logout') {
         this.handleLogout();
       }
     },
+    
     handleLogout() {
       AuthService.logout();
       this.toast.success('Đăng xuất thành công!');

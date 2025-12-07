@@ -56,6 +56,12 @@ const upload = multer({
 router.post("/register", controller.register); // Đăng ký độc giả mới
 router.post("/login", controller.login); // Đăng nhập
 
+// Profile routes (cho độc giả đang đăng nhập)
+router.get("/profile", auth, controller.getProfile); // Lấy thông tin profile
+router.put("/profile", auth, controller.updateProfile); // Cập nhật profile
+router.put("/profile/avatar", auth, upload.single("Avatar"), controller.uploadProfileAvatar); // Upload avatar
+router.put("/profile/password", auth, controller.updateProfilePassword); // Đổi mật khẩu
+
 // Protected routes (cần auth)
 router.get("/statistics", auth, controller.getStatistics); // Thống kê
 router.get("/select", auth, controller.getAllForSelect); // Danh sách cho dropdown
@@ -65,6 +71,8 @@ router.get("/:id", auth, controller.getById); // Chi tiết
 router.post("/", auth, upload.single("Avatar"), controller.create); // Tạo độc giả mới (admin)
 router.put("/:id", auth, upload.single("Avatar"), controller.update); // Cập nhật thông tin
 router.put("/:id/password", auth, controller.updatePassword); // Cập nhật mật khẩu
+router.put("/:id/ban", auth, controller.ban); // Cấm độc giả
+router.put("/:id/unban", auth, controller.unban); // Gỡ cấm độc giả
 router.put(
   "/:id/avatar",
   auth,

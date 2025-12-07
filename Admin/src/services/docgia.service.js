@@ -2,7 +2,7 @@
 import createApiClient from "./api.service";
 
 class ReaderService {
-  constructor(baseUrl = "/api/readers") {
+  constructor(baseUrl = "/api/docgia") {
     this.api = createApiClient(baseUrl);
   }
 
@@ -24,6 +24,14 @@ class ReaderService {
 
   async delete(id) {
     return (await this.api.delete(`/${id}`)).data;
+  }
+
+  async ban(id, data) {
+    return (await this.api.put(`/${id}/ban`, data)).data;
+  }
+
+  async unban(id) {
+    return (await this.api.put(`/${id}/unban`)).data;
   }
 }
 

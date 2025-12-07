@@ -269,18 +269,7 @@ exports.updatePassword = async (req, res, next) => {
       );
     }
 
-    const docGia = await DocGiaService.findByEmail(req.user.email);
-    if (!docGia) {
-      return next(new ApiError(404, "Không tìm thấy độc giả"));
-    }
-
-    // Kiểm tra mật khẩu hiện tại
-    const isMatch = await docGia.comparePassword(currentPassword);
-    if (!isMatch) {
-      return next(new ApiError(400, "Mật khẩu hiện tại không chính xác"));
-    }
-
-    await DocGiaService.updatePassword(req.params.id, newPassword);
+    await DocGiaService.updatePassword(req.params.id, currentPassword, newPassword);
 
     res.json({
       success: true,
@@ -408,6 +397,125 @@ exports.getStatistics = async (req, res, next) => {
   }
 };
 
+// Cấm độc giả mượn sách
+exports.ban = async (req, res, next) => {
+  try {
+    const { NgayBiCam } = req.body;
+
+    if (!NgayBiCam) {
+      return next(new ApiError(400, "Vui lòng cung cấp ngày cấm"));
+    }
+
+    const docGia = await DocGiaService.update(req.params.id, { NgayBiCam });
+    
+    res.json({
+      success: true,
+      message: "Đã cấm độc giả mượn sách",
+      data: docGia,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Gỡ cấm độc giả
+exports.unban = async (req, res, next) => {
+  try {
+    const docGia = await DocGiaService.update(req.params.id, { NgayBiCam: null });
+    
+    res.json({
+      success: true,
+      message: "Đã gỡ cấm độc giả",
+      data: docGia,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Lấy thông tin profile của độc giả đang đăng nhập
+exports.getProfile = async (req, res, next) => {
+  try {
+    const docGia = await DocGiaService.findById(req.user.id);
+    if (!docGia) {
+      return next(new ApiError(404, "Không tìm thấy thông tin độc giả"));
+    }
+
+    res.json({
+      success: true,
+      data: docGia,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Cập nhật profile của độc giả đang đăng nhập
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const { HoLot, Ten, DienThoai, NgaySinh, GioiTinh, DiaChiChiTiet } = req.body;
+    
+    const updateData = {
+      HoLot,
+      Ten,
+      DienThoai,
+      NgaySinh,
+      GioiTinh,
+      DiaChiChiTiet,
+    };
+
+    const docGia = await DocGiaService.update(req.user.id, updateData);
+    
+    res.json({
+      success: true,
+      message: "Cập nhật thông tin thành công",
+      data: docGia,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Upload avatar profile
+exports.uploadProfileAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return next(new ApiError(400, "Vui lòng chọn file ảnh"));
+    }
+
+    const avatarPath = req.file.path.replace(/\\/g, "/");
+    
+    const docGia = await DocGiaService.update(req.user.id, { Avatar: avatarPath });
+    
+    res.json({
+      success: true,
+      message: "Cập nhật ảnh đại diện thành công",
+      data: docGia,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Đổi mật khẩu profile
+exports.updateProfilePassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return next(new ApiError(400, "Vui lòng cung cấp mật khẩu cũ và mật khẩu mới"));
+    }
+
+    await DocGiaService.updatePassword(req.user.id, oldPassword, newPassword);
+    
+    res.json({
+      success: true,
+      message: "Đổi mật khẩu thành công",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.deleteAll = async (req, res, next) => {
   try {

@@ -98,12 +98,31 @@ class DocGiaService {
   }
 
   // Cập nhật password
-  static async updatePassword(id, newPassword) {
-    const docGia = await DocGia.findOne({ _id: id, deleted: false });
-    if (!docGia) return null;
+  static async updatePassword(id, oldPassword, newPassword) {
+    // Validate input
+    if (!oldPassword || !newPassword) {
+      throw new ApiError(400, "Vui lòng cung cấp mật khẩu cũ và mật khẩu mới");
+    }
 
+    if (newPassword.length < 6) {
+      throw new ApiError(400, "Mật khẩu mới phải có ít nhất 6 ký tự");
+    }
+
+    const docGia = await DocGia.findOne({ _id: id, deleted: false });
+    if (!docGia) {
+      throw new ApiError(404, "Không tìm thấy độc giả");
+    }
+
+    // Verify old password
+    const isMatch = await docGia.comparePassword(oldPassword);
+    if (!isMatch) {
+      throw new ApiError(400, "Mật khẩu cũ không đúng");
+    }
+
+    // Update to new password (will be hashed by pre-save hook)
     docGia.Password = newPassword;
-    await docGia.save(); // Trigger pre-save hook để hash password
+    await docGia.save();
+    
     return docGia;
   }
 
