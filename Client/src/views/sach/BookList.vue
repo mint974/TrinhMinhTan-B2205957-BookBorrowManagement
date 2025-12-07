@@ -9,15 +9,23 @@
                     <i class="fas fa-book me-2"></i>
                     Danh sách sách
                 </h2>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input 
-                        type="text" 
-                        v-model="searchQuery"
-                        @input="filterBooks"
-                        class="form-control" 
-                        placeholder="Tìm kiếm sách..." 
-                    />
+                <div class="d-flex gap-2">
+                    <button 
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#textSearchModal"
+                    >
+                        <i class="fas fa-search me-2"></i>
+                        Tìm kiếm văn bản
+                    </button>
+                    <button 
+                        class="btn btn-outline-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#voiceSearchModal"
+                    >
+                        <i class="fas fa-microphone me-2"></i>
+                        Tìm kiếm giọng nói
+                    </button>
                 </div>
             </div>
 
@@ -163,12 +171,108 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal tìm kiếm văn bản -->
+        <div class="modal fade" id="textSearchModal" tabindex="-1" aria-labelledby="textSearchModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="textSearchModalLabel">
+                            <i class="fas fa-search me-2"></i>
+                            Tìm kiếm sách
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex flex-column gap-3">
+                            <input 
+                                type="text" 
+                                v-model="searchQuery"
+                                @keyup.enter="handleTextSearch"
+                                class="form-control" 
+                                placeholder="Nhập tên sách, tác giả, hoặc danh mục..." 
+                                autofocus
+                            />
+                            <div class="d-flex justify-content-between gap-2">
+                                <button 
+                                    type="button" 
+                                    class="btn btn-primary w-100"
+                                    @click="handleTextSearch"
+                                >
+                                    <i class="fas fa-search me-2"></i> 
+                                    Tìm kiếm
+                                </button>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-outline-secondary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#voiceSearchModal" 
+                                    data-bs-dismiss="modal"
+                                >
+                                    <i class="fas fa-microphone me-2"></i> 
+                                    Giọng nói
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal tìm kiếm bằng giọng nói -->
+        <div class="modal fade" id="voiceSearchModal" tabindex="-1" aria-labelledby="voiceSearchModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="voiceSearchModalLabel">
+                            <i class="fas fa-microphone me-2"></i>
+                            Tìm kiếm bằng giọng nói
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="mb-3 text-muted">Nhấn vào biểu tượng micro và nói tên sách bạn cần tìm</p>
+
+                        <div class="mb-4">
+                            <button 
+                                class="btn btn-lg rounded-circle mic-btn"
+                                :class="{ 'recording': isRecording }"
+                                @click="toggleRecording"
+                                title="Bấm để ghi âm"
+                            >
+                                <i class="fas fa-microphone fs-2 text-white"></i>
+                            </button>
+                        </div>
+
+                        <div class="border p-3 rounded bg-light">
+                            <span class="fs-5 fst-italic" :class="transcriptText ? 'text-primary' : 'text-muted'">
+                                {{ transcriptText || 'Chưa có dữ liệu...' }}
+                            </span>
+                        </div>
+
+                        <!-- Nút quay lại -->
+                        <div class="mt-4">
+                            <button 
+                                class="btn btn-outline-secondary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#textSearchModal" 
+                                data-bs-dismiss="modal"
+                            >
+                                <i class="fas fa-arrow-left me-2"></i> 
+                                Quay lại tìm kiếm văn bản
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { Modal } from 'bootstrap';
 import SidebarMenu from '@/components/SidebarMenu.vue';
 import BookCard from '@/components/BookCard.vue';
 import BookService from '@/services/book.service';
@@ -194,6 +298,13 @@ export default {
         const filterTacGia = ref('');
         const filterNhaXuatBan = ref('');
         const filterNamXuatBan = ref('');
+
+        // Voice search
+        const isRecording = ref(false);
+        const transcriptText = ref('');
+        let recognition = null;
+        let textSearchModal = null;
+        let voiceSearchModal = null;
 
         const loadBooks = async () => {
             try {
@@ -321,8 +432,99 @@ export default {
             router.push(`/sach/${bookId}`);
         };
 
+        // Text search handler
+        const handleTextSearch = () => {
+            filterBooks();
+            if (textSearchModal) {
+                textSearchModal.hide();
+            }
+        };
+
+        // Voice recognition setup
+        const initVoiceRecognition = () => {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'vi-VN';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = () => {
+                    isRecording.value = true;
+                    transcriptText.value = 'Đang nghe...';
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    transcriptText.value = transcript;
+                    searchQuery.value = transcript;
+                };
+
+                recognition.onerror = (event) => {
+                    transcriptText.value = 'Lỗi: ' + event.error;
+                    isRecording.value = false;
+                };
+
+                recognition.onend = () => {
+                    isRecording.value = false;
+                    
+                    // Nếu có nội dung, thực hiện tìm kiếm
+                    if (searchQuery.value.trim() !== '') {
+                        filterBooks();
+                        if (voiceSearchModal) {
+                            voiceSearchModal.hide();
+                        }
+                    } else {
+                        transcriptText.value = 'Không nhận diện được âm thanh.';
+                    }
+                };
+            } else {
+                transcriptText.value = 'Trình duyệt không hỗ trợ Web Speech API.';
+            }
+        };
+
+        const toggleRecording = () => {
+            if (!recognition) {
+                initVoiceRecognition();
+            }
+
+            if (!isRecording.value && recognition) {
+                transcriptText.value = '';
+                recognition.start();
+            } else if (recognition) {
+                recognition.stop();
+            }
+        };
+
         onMounted(() => {
             loadBooks();
+            initVoiceRecognition();
+
+            // Initialize Bootstrap modals
+            const textSearchEl = document.getElementById('textSearchModal');
+            const voiceSearchEl = document.getElementById('voiceSearchModal');
+            
+            if (textSearchEl) {
+                textSearchModal = new Modal(textSearchEl);
+            }
+            if (voiceSearchEl) {
+                voiceSearchModal = new Modal(voiceSearchEl);
+                // Reset voice search when modal is hidden
+                voiceSearchEl.addEventListener('hidden.bs.modal', () => {
+                    transcriptText.value = '';
+                    if (isRecording.value && recognition) {
+                        recognition.stop();
+                    }
+                });
+            }
+        });
+
+        onUnmounted(() => {
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
         });
 
         return {
@@ -340,7 +542,11 @@ export default {
             filterNamXuatBan,
             filterBooks,
             resetFilters,
-            navigateToBook
+            navigateToBook,
+            handleTextSearch,
+            isRecording,
+            transcriptText,
+            toggleRecording
         };
     }
 };
@@ -405,6 +611,36 @@ export default {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1.5rem;
     padding: 1rem 0;
+}
+
+/* Voice Search Mic Button */
+.mic-btn {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.mic-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.mic-btn.recording {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(245, 87, 108, 0);
+    }
 }
 
 @media (max-width: 768px) {
