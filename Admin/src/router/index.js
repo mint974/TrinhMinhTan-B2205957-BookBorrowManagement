@@ -60,6 +60,18 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/bookborrow/manager/admin/readers",
+    name: "admin.readers",
+    component: () => import("../views/Readers.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/bookborrow/manager/admin/borrows",
+    name: "admin.borrows",
+    component: () => import("../views/theodoimuonsach.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/bookborrow/manager/login",
   },

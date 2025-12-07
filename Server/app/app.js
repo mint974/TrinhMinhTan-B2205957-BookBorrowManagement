@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const ApiError = require("./api-error");
 
 const app = express();
 
@@ -11,6 +12,7 @@ const diachiRoutes = require("./routes/diachi.route");
 const nhaxuatbanRoutes = require("./routes/nhaxuatban.route");
 const sachRoutes = require("./routes/sach.route");
 const docgiaRoutes = require("./routes/docgia.route");
+const theodoimuonsachRoutes = require("./routes/theodoimuonsach.route");
 
 // Enable CORS for all origins
 app.use(cors({
@@ -37,5 +39,25 @@ app.use("/api/diachi", diachiRoutes);
 app.use("/api/nhaxuatban", nhaxuatbanRoutes);
 app.use("/api/sach", sachRoutes);
 app.use("/api/docgia", docgiaRoutes);
+app.use("/api/theodoimuonsach", theodoimuonsachRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  
+  // Nếu là ApiError
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message
+    });
+  }
+  
+  // Lỗi khác
+  return res.status(500).json({
+    success: false,
+    message: err.message || 'Đã xảy ra lỗi không xác định'
+  });
+});
 
 module.exports = app;

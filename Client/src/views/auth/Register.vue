@@ -248,6 +248,14 @@ export default {
                     this.success = "Đăng ký thành công! Đang chuyển đến trang đăng nhập...";
                     this.toast.success(this.success);
                     
+                    // Lưu token và user info
+                    if (res.token) {
+                        localStorage.setItem("token", res.token);
+                    }
+                    if (res.docgia) {
+                        localStorage.setItem("user", JSON.stringify(res.docgia));
+                    }
+                    
                     // Reset form
                     this.resetForm();
 
@@ -255,9 +263,13 @@ export default {
                     setTimeout(() => {
                         this.$router.push('/login');
                     }, 2000);
+                } else {
+                    // Trường hợp success = false
+                    this.error = res.message || "Đăng ký thất bại. Vui lòng thử lại.";
+                    this.toast.error(this.error);
                 }
             } catch (err) {
-                this.error = err.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
+                this.error = err.response?.data?.message || err.message || "Đăng ký thất bại. Vui lòng thử lại.";
                 this.toast.error(this.error);
             } finally {
                 this.loading = false;

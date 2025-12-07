@@ -24,15 +24,9 @@ exports.register = async (req, res, next) => {
       return next(
         new ApiError(
           400,
-          "Vui lòng cung cấp đầy đủ thông tin"
+          "Vui lòng cung cấp đầy đủ thông tin: Họ lót, Tên, Email, Mật khẩu, Ngày sinh, Giới tính, Điện thoại"
         )
       );
-    }
-
-    // Kiểm tra email đã tồn tại
-    const existingDocGia = await DocGiaService.findByEmail(Email);
-    if (existingDocGia) {
-      return next(new ApiError(400, "Email đã được sử dụng"));
     }
 
     const data = {
@@ -49,15 +43,28 @@ exports.register = async (req, res, next) => {
       DienThoai,
     };
 
-    const newDocGia = await DocGiaService.create(data);
+    // Đăng ký qua service
+    const newDocGia = await DocGiaService.register(data);
+
+    // Tạo JWT token
+    const token = jwt.sign({
+      id: newDocGia._id,
+      email: newDocGia.Email,
+      role: "docgia",
+    });
 
     res.status(201).json({
       success: true,
       message: "Đăng ký thành công",
-      data: newDocGia,
+      token,
+      docgia: newDocGia,
     });
   } catch (error) {
-    next(error);
+    // Nếu đã là ApiError thì pass qua next, nếu không thì wrap lại
+    if (error.statusCode) {
+      return next(error);
+    }
+    return next(new ApiError(400, error.message || "Lỗi đăng ký"));
   }
 };
 
@@ -70,17 +77,10 @@ exports.login = async (req, res, next) => {
       return next(new ApiError(400, "Vui lòng cung cấp email và mật khẩu"));
     }
 
-    // Tìm độc giả theo email (bao gồm cả password)
-    const DocGia = require("../models/docgia.model");
-    const docGia = await DocGia.findOne({ Email, deleted: false });
+    // Đăng nhập qua service
+    const docGia = await DocGiaService.login(Email, Password);
 
     if (!docGia) {
-      return next(new ApiError(401, "Email hoặc mật khẩu không đúng"));
-    }
-
-    // Kiểm tra password
-    const isMatch = await docGia.comparePassword(Password);
-    if (!isMatch) {
       return next(new ApiError(401, "Email hoặc mật khẩu không đúng"));
     }
 
@@ -102,7 +102,7 @@ exports.login = async (req, res, next) => {
       docgia: docGiaData,
     });
   } catch (error) {
-    next(error);
+    return next(new ApiError(500, error.message || "Lỗi đăng nhập"));
   }
 };
 

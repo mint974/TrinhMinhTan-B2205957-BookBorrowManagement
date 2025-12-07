@@ -1,10 +1,8 @@
 import createApiClient from "./api.service";
 
-const API_URL = "http://localhost:5000";
-
 class AuthService {
   constructor(baseUrl = "/api/docgia") {
-    this.api = createApiClient(API_URL + baseUrl);
+    this.api = createApiClient(baseUrl);
   }
 
   async login(data) {

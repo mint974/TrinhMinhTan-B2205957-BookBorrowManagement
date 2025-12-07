@@ -23,6 +23,7 @@ const DocGiaSchema = new mongoose.Schema(
     DiaChiChiTiet: { type: String },
     DienThoai: { type: String, required: true },
     Avatar: { type: String, default: "" },
+    NgayBiCam: { type: Date }, // Ngày bị cấm mượn sách (nếu trả trễ)
     deleted: { type: Boolean, default: false },
   },
   {

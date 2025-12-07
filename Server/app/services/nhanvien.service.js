@@ -1,4 +1,5 @@
 const NhanVien = require("../models/nhanvien.model");
+const ApiError = require("../api-error");
 
 class NhanVienService {
   // Tạo nhân viên
@@ -35,14 +36,27 @@ class NhanVienService {
     );
   }
 
+  // Đăng ký nhân viên mới
+  static async register(data) {
+    // Kiểm tra email đã tồn tại
+    const existing = await NhanVien.findOne({ Email: data.Email, deleted: false });
+    if (existing) {
+      throw new ApiError(400, "Email đã được sử dụng. Vui lòng chọn email khác.");
+    }
+
+    // Tạo nhân viên mới (password sẽ tự động hash qua pre-save hook)
+    const nhanVien = await NhanVien.create(data);
+    
+    // Trả về không có password
+    return await NhanVien.findById(nhanVien._id).select("-Password");
+  }
+
   // Đăng nhập nhân viên
   static async login(email, password) {
-    const nv = await NhanVien.findOne({ Email: email });
-    // console.log('nv:', nv);
+    const nv = await NhanVien.findOne({ Email: email, deleted: false });
     if (!nv) return null;
 
     const isMatch = await nv.comparePassword(password);
-    // console.log("isMatch:", isMatch);
     if (!isMatch) return null;
 
     return nv;

@@ -1,4 +1,5 @@
 const DocGia = require("../models/docgia.model");
+const ApiError = require("../api-error");
 
 class DocGiaService {
   // Tạo độc giả mới
@@ -56,6 +57,32 @@ class DocGiaService {
   // Lấy độc giả theo email
   static async findByEmail(email) {
     return await DocGia.findOne({ Email: email, deleted: false });
+  }
+
+  // Đăng ký độc giả mới
+  static async register(data) {
+    // Kiểm tra email đã tồn tại
+    const existing = await DocGia.findOne({ Email: data.Email, deleted: false });
+    if (existing) {
+      throw new ApiError(400, "Email đã được sử dụng. Vui lòng chọn email khác.");
+    }
+
+    // Tạo độc giả mới (password sẽ tự động hash qua pre-save hook)
+    const docGia = await DocGia.create(data);
+    
+    // Trả về không có password
+    return await DocGia.findById(docGia._id).select("-Password");
+  }
+
+  // Đăng nhập độc giả
+  static async login(email, password) {
+    const docGia = await DocGia.findOne({ Email: email, deleted: false });
+    if (!docGia) return null;
+
+    const isMatch = await docGia.comparePassword(password);
+    if (!isMatch) return null;
+
+    return docGia;
   }
 
   // Cập nhật độc giả

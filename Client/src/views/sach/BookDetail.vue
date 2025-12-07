@@ -18,6 +18,19 @@
           Quay lại
         </button>
 
+        <!-- Confirm Modal -->
+        <AlertModal
+          ref="confirmModal"
+          modalId="borrowConfirmModal"
+          type="confirm"
+          title="Xác nhận mượn sách"
+          :message="confirmMessage"
+          confirmText="Xác nhận"
+          cancelText="Hủy"
+          :showCancel="true"
+          @confirm="handleBorrowConfirm"
+        />
+
         <div class="row">
           <!-- Book Image -->
           <div class="col-md-4">
@@ -158,24 +171,34 @@
 <script>
 import { useRoute, useRouter } from 'vue-router';
 import { ref, onMounted, computed, watch } from 'vue';
+import { useToast } from 'vue-toastification';
 import SidebarMenu from '@/components/SidebarMenu.vue';
 import BookCard from '@/components/BookCard.vue';
+import AlertModal from '@/components/AlertModal.vue';
 import BookService from '@/services/book.service';
-import BorrowService from '@/services/borrow.service';
+import TheoDoiMuonSachService from '@/services/theodoimuonsach.service';
 
 export default {
   name: 'BookDetail',
   components: {
     SidebarMenu,
-    BookCard
+    BookCard,
+    AlertModal
   },
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const toast = useToast();
     const loading = ref(true);
     const book = ref(null);
     const relatedBooks = ref([]);
     const imageError = ref(false);
+    
+    // Modal refs
+    const confirmModal = ref(null);
+    
+    // Modal messages
+    const confirmMessage = ref('');
 
     const bookImage = computed(() => {
       if (imageError.value) {
@@ -236,16 +259,42 @@ export default {
     const borrowBook = async () => {
       if (!canBorrow.value) return;
 
+      // Get current user from localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const docGiaId = user._id || user.id;
+
+      if (!docGiaId) {
+        toast.warning('Vui lòng đăng nhập để mượn sách');
+        setTimeout(() => {
+          router.push('/login');
+        }, 1500);
+        return;
+      }
+
+      confirmMessage.value = `Bạn có chắc muốn mượn sách "<strong>${book.value.TenSach}</strong>"?`;
+      confirmModal.value.show();
+    };
+
+    const handleBorrowConfirm = async () => {
       try {
-        const readerId = localStorage.getItem('readerId') || 'DOCGIA001';
-        await BorrowService.create({ 
-          MaDocGia: readerId, 
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const docGiaId = user._id || user.id;
+
+        await TheoDoiMuonSachService.create({ 
+          MaDocGia: docGiaId, 
           MaSach: book.value._id 
         });
-        alert(`Đã gửi yêu cầu mượn sách: ${book.value.TenSach}`);
+        
+        toast.success(`Đã gửi yêu cầu mượn sách: ${book.value.TenSach}. Yêu cầu đang chờ nhân viên duyệt.`, {
+          timeout: 5000
+        });
+        
+        // Reload book detail to update available quantity
+        await loadBookDetail();
       } catch (error) {
         console.error('Error borrowing book:', error);
-        alert('Có lỗi xảy ra khi mượn sách');
+        const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra khi mượn sách';
+        toast.error(errorMessage);
       }
     };
 
@@ -289,10 +338,15 @@ export default {
       bookImage,
       canBorrow,
       borrowBook,
+      handleBorrowConfirm,
       formatCurrency,
       onImageError,
       goBack,
-      navigateToBook
+      navigateToBook,
+      // Modal refs
+      confirmModal,
+      // Modal messages
+      confirmMessage
     };
   }
 };
