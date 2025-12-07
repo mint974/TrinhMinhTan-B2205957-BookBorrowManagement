@@ -483,7 +483,17 @@ exports.uploadProfileAvatar = async (req, res, next) => {
       return next(new ApiError(400, "Vui lòng chọn file ảnh"));
     }
 
-    const avatarPath = req.file.path.replace(/\\/g, "/");
+    const avatarPath = `uploads/avatar/${req.file.filename}`;
+    
+    // Xóa avatar cũ nếu có
+    const existingDocGia = await DocGiaService.findById(req.user.id);
+    if (existingDocGia && existingDocGia.Avatar) {
+      const oldAvatarPath = existingDocGia.Avatar;
+      const fs = require("fs");
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath);
+      }
+    }
     
     const docGia = await DocGiaService.update(req.user.id, { Avatar: avatarPath });
     

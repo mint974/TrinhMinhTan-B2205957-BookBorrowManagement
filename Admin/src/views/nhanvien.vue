@@ -100,7 +100,7 @@
             <template #HoTen="{ item }">
                 <div class="d-flex align-items-center">
                     <div class="avatar me-2">
-                        <img v-if="item.Avatar" :src="`http://localhost:5000${item.Avatar}`" 
+                        <img v-if="item.Avatar" :src="getAvatarUrl(item.Avatar)" 
                             class="rounded-circle border" width="36" height="36" 
                             style="object-fit: cover;" alt="Avatar" />
                         <div v-else class="bg-light rounded-circle d-flex align-items-center justify-content-center"
@@ -261,8 +261,8 @@
                         <div class="employee-profile">
                             <div class="profile-section">
                                 <div class="avatar-section">
-                                    <img v-if="selectedEmployee.Avatar" :src="`http://localhost:5000${selectedEmployee.Avatar}`" 
-                                        class="profile-img" alt="Avatar" />
+                                    <img v-if="selectedEmployee.Avatar" :src="getAvatarUrl(selectedEmployee.Avatar)" 
+                                        class="profile-image" alt="Avatar" />
                                     <i v-else class="fas fa-user-circle fa-4x text-muted"></i>
                                 </div>
                                 <div class="basic-info">
@@ -419,6 +419,13 @@ export default {
     },
 
     methods: {
+        getAvatarUrl(avatar) {
+            if (!avatar) return '';
+            // Remove leading slash if exists
+            const cleanPath = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+            return `http://localhost:5000/${cleanPath}`;
+        },
+
         async loadEmployees() {
             this.loading = true;
             try {

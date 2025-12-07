@@ -99,7 +99,7 @@
             <template #HoTen="{ item }">
                 <div class="d-flex align-items-center">
                     <div class="avatar me-2">
-                        <img v-if="item.Avatar" :src="`http://localhost:5000${item.Avatar}`" 
+                        <img v-if="item.Avatar" :src="getAvatarUrl(item.Avatar)" 
                             class="rounded-circle border" width="36" height="36" 
                             style="object-fit: cover;" alt="Avatar" />
                         <div v-else class="bg-light rounded-circle d-flex align-items-center justify-content-center"
@@ -333,7 +333,7 @@
                         <div class="row">
                             <div class="col-md-4 text-center mb-3">
                                 <img v-if="selectedReader.Avatar" 
-                                    :src="`http://localhost:5000${selectedReader.Avatar}`" 
+                                    :src="getAvatarUrl(selectedReader.Avatar)" 
                                     class="img-thumbnail rounded-circle mb-2" 
                                     style="width: 150px; height: 150px; object-fit: cover;" 
                                     alt="Avatar" />
@@ -632,7 +632,7 @@ export default {
         editReader(reader) {
             this.isEditMode = true;
             this.selectedReader = reader;
-            this.avatarPreview = reader.Avatar ? `http://localhost:5000${reader.Avatar}` : null;
+            this.avatarPreview = reader.Avatar ? this.getAvatarUrl(reader.Avatar) : null;
             this.formData = {
                 HoLot: reader.HoLot,
                 Ten: reader.Ten,
@@ -678,7 +678,7 @@ export default {
 
                 // Append avatar if selected
                 if (this.$refs.avatarInput && this.$refs.avatarInput.files[0]) {
-                    formDataToSend.append('avatar', this.$refs.avatarInput.files[0]);
+                    formDataToSend.append('Avatar', this.$refs.avatarInput.files[0]);
                 }
 
                 if (this.isEditMode) {
@@ -750,6 +750,13 @@ export default {
                 this.toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
                 console.error(error);
             }
+        },
+
+        getAvatarUrl(avatar) {
+            if (!avatar) return '';
+            // Xử lý cả trường hợp có và không có dấu / ở đầu
+            const cleanPath = avatar.startsWith('/') ? avatar : `/${avatar}`;
+            return `http://localhost:5000${cleanPath}`;
         },
 
         formatDate(date) {

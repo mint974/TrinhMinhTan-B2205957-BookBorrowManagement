@@ -7,7 +7,7 @@
                     <div class="card profile-card">
                         <div class="card-body text-center">
                             <div class="avatar-wrapper mb-3">
-                                <img v-if="profile.Avatar" :src="`http://localhost:5000${profile.Avatar}`"
+                                <img v-if="profile.Avatar" :src="getAvatarUrl(profile.Avatar)"
                                     class="profile-avatar" alt="Avatar" />
                                 <div v-else class="profile-avatar-placeholder">
                                     <i class="fas fa-user-circle"></i>
@@ -216,6 +216,13 @@ export default {
     },
 
     methods: {
+        getAvatarUrl(avatar) {
+            if (!avatar) return '';
+            // Remove leading slash if exists
+            const cleanPath = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+            return `http://localhost:5000/${cleanPath}`;
+        },
+
         async loadProfile() {
             try {
                 this.profile = await NhanVienService.getProfile();

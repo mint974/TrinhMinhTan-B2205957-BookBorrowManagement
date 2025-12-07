@@ -261,47 +261,12 @@
                     </select>
                   </div>
 
-                  <div class="mb-3">
-                    <label class="form-label">
-                      <i class="fas fa-map-marker-alt me-1 text-danger"></i>
-                      Tỉnh/Thành phố
-                    </label>
-                    <select class="form-select" v-model="form.MaTinh">
-                      <option value="">Chọn tỉnh/thành phố</option>
-                      <!-- Tạm thời hard-code, sẽ tích hợp API sau -->
-                      <option value="79">TP. Hồ Chí Minh</option>
-                      <option value="01">Hà Nội</option>
-                      <option value="48">Đà Nẵng</option>
-                      <option value="31">Hải Phòng</option>
-                      <option value="92">Cần Thơ</option>
-                    </select>
-                  </div>
-
-                  <div class="mb-3">
-                    <label class="form-label">
-                      <i class="fas fa-map-marker-alt me-1 text-warning"></i>
-                      Quận/Huyện
-                    </label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      v-model="form.MaQuan"
-                      placeholder="Nhập quận/huyện..."
-                    />
-                  </div>
-
-                  <div class="mb-3">
-                    <label class="form-label">
-                      <i class="fas fa-map-marker-alt me-1 text-info"></i>
-                      Phường/Xã
-                    </label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      v-model="form.MaPhuong"
-                      placeholder="Nhập phường/xã..."
-                    />
-                  </div>
+                  <!-- Address Select Component -->
+                  <AddressSelect
+                    v-model:tinh="form.MaTinh"
+                    v-model:quan="form.MaQuan"
+                    v-model:phuong="form.MaPhuong"
+                  />
 
                   <div class="mb-3">
                     <label class="form-label">
@@ -496,6 +461,7 @@ import TacGiaService from '../services/tacgia.service';
 import PageHeader from '../components/PageHeader.vue';
 import SearchFilter from '../components/SearchFilter.vue';
 import DataTable from '../components/DataTable.vue';
+import AddressSelect from '../components/AddressSelect.vue';
 import { Modal } from 'bootstrap';
 
 export default {
@@ -503,7 +469,8 @@ export default {
   components: {
     PageHeader,
     SearchFilter,
-    DataTable
+    DataTable,
+    AddressSelect
   },
 
   setup() {
